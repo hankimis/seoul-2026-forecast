@@ -1,7 +1,7 @@
 {
   "_note": "2026-06-03 9th local election metropolitan races. v5. NOTE: 광주+전남 merged into 전남광주통합특별시 → ONE race (민형배 vs 이정현), so 16 광역단체장 (verify with 선관위). Each region: polls[] with method (phone=전화면접 / ars=자동응답 / mix). Method matters hugely: phone tends to show 여당(D) bigger leads, ARS shows tighter (샤이보수). Names + numbers approximate; verify vs NESDC. D=더불어민주당(여당), P=국민의힘.",
   "config": {
-    "method_twoway_adj": { "phone": -3, "ars": 3, "mix": 0, "unknown": 0 },
+    "method_twoway_adj": { "phone": 0, "ars": 5, "mix": 2, "unknown": 0 },
     "clusters": { "수도권": ["서울","인천","경기"], "충청": ["대전","세종","충북","충남"], "영남": ["부산","울산","경남"], "대경": ["대구","경북"], "호남": ["전남광주","전북"], "강원": ["강원"], "제주": ["제주"] }
   },
   "regions": [

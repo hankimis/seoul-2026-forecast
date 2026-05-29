@@ -1,0 +1,11 @@
+{
+  "_note": "2022 (8th local) FINAL pre-blackout polls, 지상파3사(KBS·MBC·SBS) 입소스/한국리서치/코리아리서치 5/23-25, 전화면접(phone). Used to backtest the model vs the known 2022 result (results-2022.json) and calibrate bias/σ. D/P = candidate %.",
+  "method": "phone",
+  "polls": {
+    "서울": { "D": 31.2, "P": 53.6 },
+    "강원": { "D": 34.0, "P": 44.9 },
+    "제주": { "D": 42.3, "P": 31.6 },
+    "경기": { "D": 39.1, "P": 37.7 },
+    "대전": { "D": 40.0, "P": 36.1 }
+  }
+}

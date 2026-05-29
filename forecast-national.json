@@ -4,7 +4,11 @@
     "D": "이원택",
     "P": "국힘(미미)",
     "predicted_twoway_D": 87.85,
-    "predicted_votes_man": {
+    "ci90": [
+      80.5,
+      95.2
+    ],
+    "votes_man": {
       "D": 62,
       "P": 9
     },
@@ -16,7 +20,11 @@
     "D": "민형배",
     "P": "이정현",
     "predicted_twoway_D": 89.82,
-    "predicted_votes_man": {
+    "ci90": [
+      82.4,
+      97.2
+    ],
+    "votes_man": {
       "D": 120,
       "P": 14
     },
@@ -27,9 +35,13 @@
     "region": "제주",
     "D": "위성곤",
     "P": "문성유",
-    "predicted_twoway_D": 69.26,
-    "predicted_votes_man": {
-      "D": 18,
+    "predicted_twoway_D": 71,
+    "ci90": [
+      63.6,
+      78.4
+    ],
+    "votes_man": {
+      "D": 19,
       "P": 8
     },
     "dwin": 0.98,
@@ -39,144 +51,192 @@
     "region": "경기",
     "D": "추미애",
     "P": "양향자",
-    "predicted_twoway_D": 60.4,
-    "predicted_votes_man": {
-      "D": 319,
-      "P": 209
+    "predicted_twoway_D": 62.65,
+    "ci90": [
+      52.2,
+      73.1
+    ],
+    "votes_man": {
+      "D": 331,
+      "P": 197
     },
-    "dwin": 0.937,
+    "dwin": 0.976,
     "winner": "민주"
   },
   {
     "region": "대전",
     "D": "허태정",
     "P": "이장우",
-    "predicted_twoway_D": 55.82,
-    "predicted_votes_man": {
-      "D": 32,
-      "P": 25
+    "predicted_twoway_D": 57.56,
+    "ci90": [
+      50.2,
+      65
+    ],
+    "votes_man": {
+      "D": 33,
+      "P": 24
     },
-    "dwin": 0.882,
+    "dwin": 0.954,
     "winner": "민주"
   },
   {
     "region": "인천",
     "D": "박찬대",
     "P": "유정복",
-    "predicted_twoway_D": 55.72,
-    "predicted_votes_man": {
-      "D": 66,
-      "P": 53
+    "predicted_twoway_D": 57.46,
+    "ci90": [
+      50.1,
+      64.9
+    ],
+    "votes_man": {
+      "D": 69,
+      "P": 51
     },
-    "dwin": 0.882,
-    "winner": "민주"
-  },
-  {
-    "region": "강원",
-    "D": "민주 후보",
-    "P": "김진태",
-    "predicted_twoway_D": 55.18,
-    "predicted_votes_man": {
-      "D": 34,
-      "P": 28
-    },
-    "dwin": 0.855,
+    "dwin": 0.951,
     "winner": "민주"
   },
   {
     "region": "세종",
     "D": "우상호",
     "P": "김진태",
-    "predicted_twoway_D": 54.95,
-    "predicted_votes_man": {
+    "predicted_twoway_D": 56.69,
+    "ci90": [
+      49.3,
+      64.1
+    ],
+    "votes_man": {
       "D": 8,
-      "P": 7
+      "P": 6
     },
-    "dwin": 0.845,
+    "dwin": 0.932,
+    "winner": "민주"
+  },
+  {
+    "region": "강원",
+    "D": "민주 후보",
+    "P": "김진태",
+    "predicted_twoway_D": 56.34,
+    "ci90": [
+      48.9,
+      63.7
+    ],
+    "votes_man": {
+      "D": 35,
+      "P": 27
+    },
+    "dwin": 0.92,
     "winner": "민주"
   },
   {
     "region": "충남",
     "D": "박수현",
     "P": "김태흠",
-    "predicted_twoway_D": 56.81,
-    "predicted_votes_man": {
-      "D": 48,
-      "P": 36
+    "predicted_twoway_D": 58.69,
+    "ci90": [
+      46.1,
+      71.3
+    ],
+    "votes_man": {
+      "D": 49,
+      "P": 35
     },
-    "dwin": 0.799,
+    "dwin": 0.872,
     "winner": "민주"
   },
   {
     "region": "서울",
     "D": "정원오",
     "P": "오세훈",
-    "predicted_twoway_D": 52.05,
-    "predicted_votes_man": {
-      "D": 202,
-      "P": 186
+    "predicted_twoway_D": 54.05,
+    "ci90": [
+      44.1,
+      64
+    ],
+    "votes_man": {
+      "D": 210,
+      "P": 178
     },
-    "dwin": 0.627,
+    "dwin": 0.746,
     "winner": "민주"
   },
   {
     "region": "충북",
     "D": "신용한",
     "P": "김영환",
-    "predicted_twoway_D": 51.43,
-    "predicted_votes_man": {
-      "D": 32,
-      "P": 31
+    "predicted_twoway_D": 52.59,
+    "ci90": [
+      45.2,
+      60
+    ],
+    "votes_man": {
+      "D": 33,
+      "P": 30
     },
-    "dwin": 0.618,
-    "winner": "민주"
-  },
-  {
-    "region": "경남",
-    "D": "김경수",
-    "P": "박완수",
-    "predicted_twoway_D": 51.12,
-    "predicted_votes_man": {
-      "D": 67,
-      "P": 64
-    },
-    "dwin": 0.563,
+    "dwin": 0.719,
     "winner": "민주"
   },
   {
     "region": "부산",
     "D": "전재수",
     "P": "박형준",
-    "predicted_twoway_D": 50.75,
-    "predicted_votes_man": {
-      "D": 70,
-      "P": 68
+    "predicted_twoway_D": 53,
+    "ci90": [
+      43.8,
+      62.2
+    ],
+    "votes_man": {
+      "D": 73,
+      "P": 65
     },
-    "dwin": 0.553,
+    "dwin": 0.704,
+    "winner": "민주"
+  },
+  {
+    "region": "경남",
+    "D": "김경수",
+    "P": "박완수",
+    "predicted_twoway_D": 53,
+    "ci90": [
+      41.7,
+      64.3
+    ],
+    "votes_man": {
+      "D": 69,
+      "P": 62
+    },
+    "dwin": 0.669,
     "winner": "민주"
   },
   {
     "region": "울산",
     "D": "김상욱",
     "P": "김두겸",
-    "predicted_twoway_D": 48.63,
-    "predicted_votes_man": {
+    "predicted_twoway_D": 50.37,
+    "ci90": [
+      43,
+      57.8
+    ],
+    "votes_man": {
       "D": 22,
-      "P": 23
+      "P": 22
     },
-    "dwin": 0.39,
-    "winner": "국힘"
+    "dwin": 0.533,
+    "winner": "민주"
   },
   {
     "region": "대구",
     "D": "김부겸",
     "P": "추경호",
-    "predicted_twoway_D": 45.51,
-    "predicted_votes_man": {
-      "D": 44,
-      "P": 52
+    "predicted_twoway_D": 47.38,
+    "ci90": [
+      36,
+      58.7
+    ],
+    "votes_man": {
+      "D": 45,
+      "P": 50
     },
-    "dwin": 0.272,
+    "dwin": 0.353,
     "winner": "국힘"
   },
   {
@@ -184,7 +244,11 @@
     "D": "오중기",
     "P": "국힘 후보",
     "predicted_twoway_D": 30.31,
-    "predicted_votes_man": {
+    "ci90": [
+      22.9,
+      37.7
+    ],
+    "votes_man": {
       "D": 32,
       "P": 73
     },
