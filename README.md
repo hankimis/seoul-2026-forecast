@@ -1,5 +1,7 @@
 # 2026 Korean Local Elections — Forecast (private research)
 
+![version](https://img.shields.io/badge/model-v8-1f6feb) ![method](https://img.shields.io/badge/method-polls%20%E2%8A%95%20fundamentals-238636) ![sim](https://img.shields.io/badge/Monte%20Carlo-50k%20draws-8957e5) ![repro](https://img.shields.io/badge/reproducible-seeded-success) ![calibration](https://img.shields.io/badge/2022%20backtest-MAE%202.2pt-blue) ![status](https://img.shields.io/badge/status-sealed%20until%2006--03-critical) ![license](https://img.shields.io/badge/visibility-private-lightgrey)
+
 A poll + fundamentals forecast of every metropolitan mayor/governor race in the **2026-06-03** Korean local election — predicting **vote share, vote counts, win probability, 90% intervals, and scenario odds**, empirically calibrated against a 2022 backtest and self-scored after the result. Built over eight versions. It also carries an LLM-persona experiment that we keep around precisely because it *failed* — an honest negative result. Internal research, kept private.
 
 > **Abstract.** We forecast the 16 metropolitan-executive (광역단체장) races of Korea's 9th local election (2026-06-03) by combining a **structural fundamentals** estimate (each region's 2022 two-way vote, swung to the 2026 environment on the logit scale) with **method-normalized poll aggregates**, fused by poll-count-weighted hierarchical shrinkage. Outcome uncertainty is propagated through a **50,000-draw correlated Monte Carlo** with a three-level error budget (national ⊕ cluster ⊕ local) and **heavy-tailed (normal-mixture ≈ Student-t)** innovations, so that a single nationwide polling miss moves correlated blocs together. The pipeline is **seeded and fully reproducible**. The central estimate is **민주 12 / 16 seats** (90% credible range 8–15), with five genuine tossups (서울·부산·경남·충북·울산). We calibrate the error model on the 2022 final phone polls (bias −0.1pt, MAE 2.2pt, σ≈2.6) and quantify the dominant failure mode — a *correlated* poll bias — with an explicit ±4pt scenario sweep (−3pt → 11 seats). A parallel **silicon-sampling** experiment (an LLM-persona electorate) is reported as a **negative result**: it contradicted every real poll and added bias, not signal. The model self-scores against the realized result via a pre-committed `score.mjs` after polls close.
@@ -115,6 +117,20 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 | 민감도 (민주 우세 수) | 기준 14 · 방식보정無 14 · 스윙± 13~14 |
 | 체계적 편향 −3pt 시 | 11석 (한쪽 통째 오류 리스크) |
 
+**누적 의석 확률 사다리** — `P(민주 ≥ k석)`, 50k 시뮬레이션의 누적분포(seat_pct):
+
+| 임계 | 확률 | |
+|---|--:|---|
+| 민주 16석 ↑ (싹쓸이) | 0.2% | `▏` |
+| 민주 15석 ↑ | 9% | `█▉` |
+| 민주 14석 ↑ | 26% | `█████▊` |
+| 민주 13석 ↑ | 46% | `██████████▏` |
+| 민주 12석 ↑ (★ 중앙값) | 64% | `██████████████` |
+| 민주 11석 ↑ | 78% | `█████████████████▏` |
+| 민주 10석 ↑ (과반 안정) | 87% | `███████████████████▏` |
+| 민주 9석 ↑ (과반) | 93% | `████████████████████▌` |
+| 민주 8석 ↑ (90% 하한) | 97% | `█████████████████████▎` |
+
 ## Empirical calibration — 2022 backtest
 
 ![2022 backtest](docs/backtest.gif)
@@ -126,6 +142,12 @@ The 2022 **final phone polls** (지상파 3사, 5/23–25) vs the actual 2022 re
 | 2022 phone polls | **−0.1pt** | **2.2pt** | 2.6 | 4/5 | 0.137 |
 
 Phone polls were essentially **unbiased**; the one miss (대전: polls D-lead → 국힘 won by ~4pt) sizes the tail. So v6 sets **σ_local ≈ 2.8** and treats phone as the accurate anchor, **pulling ARS up toward phone (+5pt 민주 two-way)** instead of guessing. ⚠️ If a *2026* shy-conservative effect is bigger than 2022's, phone overstates 민주 — that risk lives in the D-lean tossups.
+
+### 방식 편향이 왜 가장 큰 변수인가
+
+같은 지역을 같은 시기에 조사해도 **전화면접(phone)과 자동응답(ARS)이 양자 득표율을 최대 16pt까지 다르게** 내놓는다 (충남). ARS는 접전을 과대평가(샤이보수·고관여 응답 편중)하고, 2022 백테스트상 정확했던 쪽은 phone이었다. 모델이 ARS를 phone 기준으로 +5pt 보정하는 이유 — 그리고 이 보정이 틀리면(2026 샤이보수가 2022보다 크면) D-우세 경합지가 함께 흔들리는 이유다.
+
+![ARS vs phone method bias](docs/method.gif)
 
 ## Predicted share + post-election scoring
 
@@ -252,6 +274,42 @@ Every constant, its value, and *why* it has that value (no free hand-tuning beyo
 
 For a well-polled tossup ($\sigma_{\text{loc}}=2.8$), the nominal per-race standard deviation is $\sqrt{2.5^2+2.5^2+2.8^2}\approx 4.5$pt; the heavy-tail mixture lifts the *effective* sd to $\approx 4.5\sqrt{1.57}\approx 5.6$pt. Because $\sigma_{\text{nat}}$ and $\sigma_{\text{clu}}$ are **shared** across regions, errors are positively correlated *within* a cluster and *nationally* — which is exactly why the seat distribution has fat tails (8–15) rather than the artificially narrow band an independent-errors model would produce.
 
+How one region's simulated share is built each draw — three nested shocks, two of them shared:
+
+```mermaid
+flowchart LR
+    MU["중심추정 μ_r<br/>(blend)"] --> SUM["d_r = μ_r + 3 shocks"]
+    N["ε_nat ~ N(0, 2.5²)<br/><i>전국 공통</i>"] -->|"shared by ALL 16"| SUM
+    C["ε_clu ~ N(0, 2.5²)<br/><i>클러스터 공통</i>"] -->|"shared within bloc"| SUM
+    L["ε_loc,r ~ N(0, σ_loc²)<br/><i>지역 고유</i>"] -->|"independent"| SUM
+    SUM --> W{"d_r &gt; 50 ?"}
+    W -->|yes| WIN["민주 승"]
+    W -->|no| LOSE["국힘 승"]
+    style N fill:#b34747,color:#fff
+    style C fill:#c77d2e,color:#fff
+    style L fill:#3a7d44,color:#fff
+    style SUM fill:#1f6feb,color:#fff
+```
+
+The two shared shocks are what make a *national* polling miss move whole blocs together. The clusters that travel as a unit:
+
+```mermaid
+flowchart TD
+    NAT["전국 공통 오차 ε_nat<br/>(모든 지역 동시 이동)"]
+    NAT --> SUDO["수도권<br/>서울·인천·경기"]
+    NAT --> CHUNG["충청<br/>대전·세종·충북·충남"]
+    NAT --> YEONG["영남<br/>부산·울산·경남"]
+    NAT --> DK["대경<br/>대구·경북"]
+    NAT --> HONAM["호남<br/>전남광주·전북"]
+    NAT --> GW["강원"]
+    NAT --> JEJU["제주"]
+    style NAT fill:#1f6feb,color:#fff
+    style YEONG fill:#c77d2e,color:#fff
+    style SUDO fill:#3a7d44,color:#fff
+```
+
+> 영남(부산·울산·경남)이 한 클러스터인 게 핵심 — 셋이 모두 51–53% 경합이라, 영남 클러스터 오차 하나가 세 석을 동시에 좌우한다.
+
 ## The LLM experiment in detail
 
 `forecast.mjs` builds a detailed synthetic Seoul electorate (district × age × gender × housing × occupation × income), asks each persona — across **claude-haiku, claude-sonnet, gpt-4o-mini** — for a vote + turnout, poststratifies, calibrates each model against a 2022 backtest, and blends with polls. The result:
@@ -331,6 +389,7 @@ A forecast is not a prophecy. It is a **structured, falsifiable statement of unc
 node national.mjs       # forecast + analytics -> forecast-national.json, forecast-meta.json
 node dist.mjs           # seat-distribution histogram + scenarios + vote bar
 node viz.mjs            # per-region win-probability + 90% interval chart
+node method-viz.mjs     # ARS vs phone method-bias chart
 node backtest-2022.mjs  # calibration: 2022 phone polls vs actual
 node score.mjs          # after 06-03: grade vs data/results-2026-actual.json
 vhs docs/*.tape         # regenerate the GIFs
@@ -342,7 +401,7 @@ vhs docs/*.tape         # regenerate the GIFs
 - **National model:** `national.mjs` · `dist.mjs` · `data/national-2026.json` (16 regions, polls[]+method, clusters) · `data/results-2022.json` (fundamentals) · `data/voters-2026.json` · `forecast-national.json` / `forecast-meta.json` (output)
 - **Calibration / scoring:** `backtest-2022.mjs` · `data/polls-2022-final.json` · `score.mjs` · `data/results-2026-actual.json` (fill after 06-03)
 - **LLM experiment:** `forecast.mjs` · `personas.mjs` · `calibration.json` · `data/seoul-demographics.json` · `data/polls-2026.json`
-- **Visualization:** `viz.mjs` → `docs/probs.gif` (per-region probability + interval chart)
+- **Visualization:** `viz.mjs` → `docs/probs.gif` (probability + interval) · `method-viz.mjs` → `docs/method.gif` (ARS vs phone) · Mermaid pipeline/error/cluster diagrams (inline)
 - **Misc:** `seal.mjs` (unused) · `docs/*.tape` + `docs/*.gif` · `prediction*.json` git-ignored
 
 ## Honest limitations
