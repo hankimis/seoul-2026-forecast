@@ -30,11 +30,31 @@ A detailed synthetic electorate (district × age × gender × housing × job × 
 | v3 | **538-style fundamentals (2022 logit-swing) ⊕ polls**; dropped the hand-tuned correction | 2022 경기 (polls had 국힘 +8, 민주 won) proved poll bias is **not one-directional** → regularize with fundamentals + wide σ, not a one-way nudge |
 | v4 | **poll-backed every competitive region** (강원·울산·제주 added) | only 호남3 + 경북 remain fundamentals-only (lopsided, accurate). 울산 flipped to 민주-lean once its poll was in |
 
-## National v4 — all 17
+## National v4 — full forecast (all 17)
 
-민주(파랑) median 13, 국힘(빨강) 대구·경북. 경합(노랑): 충북·경남·부산·충남·울산. See the GIF for the live table; values in `data/national-2026.json` (+ `node national.mjs`).
+Sorted by 민주 win probability. `펀더D` = fundamentals two-way 민주 (2022 logit-swung), `폴D` = poll aggregate two-way, `최종D` = blend. 근거: 폴 = poll-blended, 펀 = fundamentals-only. (Probabilities are from a representative 50k Monte-Carlo run; reproduce with `node national.mjs`.)
 
-Safe 민주: 광주·전남·전북·제주·경기·인천·대전·세종·강원 · Lean 민주: 서울 · Tossup-민주: 충북·경남·부산·충남·울산 · 국힘: 대구·경북.
+| 지역 | 매치업 | 펀더D | 폴D | 최종D | 예상 당선 | 민주 승리확률 | 판정 |
+|---|---|--:|--:|--:|:--:|--:|:--:|
+| 광주 | 민주 vs 국힘 | 88.6 | – | **88.6** | 🔵 민주 | 97% | 안정 |
+| 전남 | 민주 vs 국힘 | 91.0 | – | **91.0** | 🔵 민주 | 97% | 안정 |
+| 전북 | 이원택 vs 국힘(미미) | 87.8 | – | **87.8** | 🔵 민주 | 97% | 안정 |
+| 제주 | 위성곤 vs 문성유 | 64.2 | 75.9 | **72.4** | 🔵 민주 | 97% | 안정 |
+| 경기 | 추미애 vs 양향자 | 58.0 | 61.7 | **60.6** | 🔵 민주 | 97% | 안정 |
+| 인천 | 박찬대 vs 유정복 | 54.3 | 59.8 | **58.1** | 🔵 민주 | 95% | 안정 |
+| 대전 | 허태정 vs 이장우 | 56.8 | 58.1 | **57.7** | 🔵 민주 | 94% | 안정 |
+| 세종 | 우상호 vs 김진태 | 55.1 | 57.9 | **57.0** | 🔵 민주 | 92% | 안정 |
+| 강원 | 민주 vs 국힘 | 53.9 | 56.1 | **55.5** | 🔵 민주 | 86% | 안정 |
+| 서울 | 정원오 vs 오세훈 | 47.8 | 54.6 | **52.5** | 🔵 민주 | 69% | 우세 |
+| 충북 | 신용한 vs 김영환 | 49.7 | 52.7 | **51.8** | 🔵 민주 | 64% | 경합 |
+| 경남 | 김경수 vs 박완수 | 44.6 | 54.2 | **51.3** | 🔵 민주 | 61% | 경합 |
+| 부산 | 전재수 vs 박형준 | 41.1 | 55.4 | **51.1** | 🔵 민주 | 59% | 경합 |
+| 충남 | 박수현 vs 김태흠 | 54.1 | 49.8 | **51.1** | 🔵 민주 | 59% | 경합 |
+| 울산 | 김상욱 vs 김두겸 | 48.0 | 52.1 | **50.9** | 🔵 민주 | 57% | 경합 |
+| 대구 | 민주 vs 국힘 | 24.4 | 50.6 | **42.8** | 🔴 국힘 | 7% | 안정 |
+| 경북 | 오중기 vs 국힘 | 30.3 | – | **30.3** | 🔴 국힘 | 3% | 안정 |
+
+**예상 민주 의석: 중앙값 13 / 17 (90% 범위 8~16)** · 우세 카운트 민주 15 · 국힘 2 · **티핑포인트: 울산** (최종 50.9%, D 57%) · 경합 5곳(충북·경남·부산·충남·울산, 전부 D 51~52).
 
 ## Run
 
