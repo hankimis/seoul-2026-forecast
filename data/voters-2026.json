@@ -1,10 +1,22 @@
 {
-  "_note": "APPROXIMATE eligible voters (선거인수) in 만명(10k) units + turnout/two-party assumptions. Verify vs 선관위. 전남광주 = 광주+전남 합산. 득표수 = 선거인수 x turnout x two_party_frac x 예측득표율.",
-  "turnout": 0.52,
+  "_note": "eligible_10k = 선거인수(만명, 근사 — 정확값은 선관위 공표치로 교체하면 총투표 예측이 ±3% 안으로 가능). turnout = 2026 투표율 추정(경합 많아 2022 50.9%보다 상향 추정; 실제는 ±수pt 변동 가능 — 총투표 오차의 주원인). two_party_frac = 양당 합계 비율. 총투표=eligible×turnout, 원득표율=양자×frac.",
   "two_party_frac": 0.90,
-  "eligible_10k": {
-    "서울": 830, "부산": 295, "대구": 205, "인천": 255, "대전": 123, "세종": 32,
-    "경기": 1130, "강원": 132, "충북": 135, "충남": 180, "전북": 152, "전남광주": 285,
-    "경북": 225, "경남": 280, "울산": 95, "제주": 57
+  "regions": {
+    "서울":     { "eligible_10k": 830,  "turnout": 0.55 },
+    "부산":     { "eligible_10k": 295,  "turnout": 0.53 },
+    "대구":     { "eligible_10k": 205,  "turnout": 0.52 },
+    "인천":     { "eligible_10k": 255,  "turnout": 0.51 },
+    "대전":     { "eligible_10k": 123,  "turnout": 0.53 },
+    "세종":     { "eligible_10k": 32,   "turnout": 0.55 },
+    "경기":     { "eligible_10k": 1130, "turnout": 0.53 },
+    "강원":     { "eligible_10k": 132,  "turnout": 0.56 },
+    "충북":     { "eligible_10k": 135,  "turnout": 0.53 },
+    "충남":     { "eligible_10k": 180,  "turnout": 0.53 },
+    "전북":     { "eligible_10k": 152,  "turnout": 0.55 },
+    "전남광주": { "eligible_10k": 285,  "turnout": 0.56 },
+    "경북":     { "eligible_10k": 225,  "turnout": 0.56 },
+    "경남":     { "eligible_10k": 280,  "turnout": 0.54 },
+    "울산":     { "eligible_10k": 95,   "turnout": 0.55 },
+    "제주":     { "eligible_10k": 57,   "turnout": 0.54 }
   }
 }

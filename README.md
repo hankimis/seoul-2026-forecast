@@ -18,7 +18,7 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 
 - **민주(여당) median 13 / 16 seats** (90% range 9–15); 국힘 holds **대구·경북**. `P(민주 ≥ 12) = 70%`, `P(민주 과반) = 96%`.
 - **Tipping point: 울산** (50.4%, 민주 53%). Other tossups lean 민주: 부산·경남·충북·서울.
-- **National two-party vote ≈ 민주 1,213만 (58.7%) vs 국힘 852만 (41.3%).**
+- **National two-party vote ≈ 총투표 2,375만 → 민주 1,257만 (58.8%) vs 국힘 881만 (41.2%).**
 - **Empirically calibrated:** the 2022 final phone polls were ~unbiased (MAE 2.2pt, σ 2.6), so method correction and σ are set from that backtest, not by hand.
 
 ## The two experiments
@@ -43,26 +43,28 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 
 ## v6 forecast — all 16
 
-예측D = 예측 민주 양자 득표율 · 90%구간 = 양자 득표율 구간 · 득표수 = 만 표 · 확률 = 민주 승리확률. 정렬 = 확률순.
+**민주% / 국힘%** = 원(raw) 득표율 (전체 표 대비) · **예측D** = 양자 득표율(±90%구간) · **총투표** = 예측 총 투표자수(만) · **득표수** = 만 표 · **확률** = 민주 승리확률. 정렬 = 확률순. (목표 정확도 ±3% — 검증은 6/3 `score.mjs`)
 
-| 지역 | 매치업 | 예측D | 90%구간 | 민주(만) | 국힘(만) | 표차 | 확률 | 당선 |
-|---|---|--:|:--:|--:|--:|--:|--:|:--:|
-| 전남광주 | 민형배 vs 이정현 | 89.8% | 82~97 | 120 | 14 | +106 | 98% | 🔵 |
-| 전북 | 이원택 vs 김관영(무) | 87.8% | 80~95 | 62 | 9 | +54 | 98% | 🔵 |
-| 제주 | 위성곤 vs 문성유 | 71.0% | 64~78 | 19 | 8 | +11 | 98% | 🔵 |
-| 경기 | 추미애 vs 양향자 | 62.7% | 52~73 | 331 | 197 | +134 | 98% | 🔵 |
-| 대전 | 허태정 vs 이장우 | 57.6% | 50~65 | 33 | 24 | +9 | 95% | 🔵 |
-| 인천 | 박찬대 vs 유정복 | 57.5% | 50~65 | 69 | 51 | +18 | 95% | 🔵 |
-| 세종 | 우상호 vs 김진태 | 56.7% | 49~64 | 8 | 6 | +2 | 93% | 🔵 |
-| 강원 | 민주 vs 김진태 | 56.3% | 49~64 | 35 | 27 | +8 | 92% | 🔵 |
-| 충남 | 박수현 vs 김태흠 | 58.7% | 46~71 | 49 | 35 | +15 | 87% | 🔵 |
-| 서울 | 정원오 vs 오세훈 | 54.1% | 44~64 | 210 | 178 | +31 | 75% | 🔵 |
-| 충북 | 신용한 vs 김영환 | 52.6% | 45~60 | 33 | 30 | +3 | 72% | 🔵 |
-| 부산 | 전재수 vs 박형준 | 53.0% | 44~62 | 73 | 65 | +8 | 71% | 🔵 |
-| 경남 | 김경수 vs 박완수 | 53.0% | 42~64 | 69 | 62 | +8 | 67% | 🔵 |
-| 울산 | 김상욱 vs 김두겸 | 50.4% | 43~58 | 22 | 22 | +0 | 53% | 🔵 |
-| 대구 | 김부겸 vs 추경호 | 47.4% | 36~59 | 45 | 50 | −5 | 35% | 🔴 |
-| 경북 | 오중기 vs 국힘 | 30.3% | 23~38 | 32 | 73 | −41 | 2% | 🔴 |
+| 지역 | 매치업 | 민주% | 국힘% | 예측D(양자) | 90%구간 | 총투표(만) | 민주(만) | 국힘(만) | 확률 | 당선 |
+|---|---|--:|--:|--:|:--:|--:|--:|--:|--:|:--:|
+| 전남광주 | 민형배 vs 이정현 | 80.8 | 9.2 | 89.8% | 82~97 | 160 | 129 | 15 | 98% | 🔵 |
+| 전북 | 이원택 vs 김관영(무) | 79.1 | 10.9 | 87.8% | 80~95 | 84 | 66 | 9 | 98% | 🔵 |
+| 제주 | 위성곤 vs 문성유 | 63.9 | 26.1 | 71.0% | 64~78 | 31 | 20 | 8 | 98% | 🔵 |
+| 경기 | 추미애 vs 양향자 | 56.4 | 33.6 | 62.7% | 52~73 | 599 | 338 | 201 | 98% | 🔵 |
+| 대전 | 허태정 vs 이장우 | 51.8 | 38.2 | 57.6% | 50~65 | 65 | 34 | 25 | 95% | 🔵 |
+| 인천 | 박찬대 vs 유정복 | 51.7 | 38.3 | 57.5% | 50~65 | 130 | 67 | 50 | 95% | 🔵 |
+| 세종 | 우상호 vs 김진태 | 51.0 | 39.0 | 56.7% | 49~64 | 18 | 9 | 7 | 93% | 🔵 |
+| 강원 | 민주 vs 김진태 | 50.7 | 39.3 | 56.3% | 49~64 | 74 | 37 | 29 | 92% | 🔵 |
+| 충남 | 박수현 vs 김태흠 | 52.8 | 37.2 | 58.7% | 46~71 | 95 | 50 | 35 | 87% | 🔵 |
+| 서울 | 정원오 vs 오세훈 | 48.6 | 41.4 | 54.1% | 44~64 | 457 | 222 | 189 | 75% | 🔵 |
+| 충북 | 신용한 vs 김영환 | 47.3 | 42.7 | 52.6% | 45~60 | 72 | 34 | 31 | 72% | 🔵 |
+| 부산 | 전재수 vs 박형준 | 47.7 | 42.3 | 53.0% | 44~62 | 156 | 75 | 66 | 70% | 🔵 |
+| 경남 | 김경수 vs 박완수 | 47.7 | 42.3 | 53.0% | 42~64 | 151 | 72 | 64 | 67% | 🔵 |
+| 울산 | 김상욱 vs 김두겸 | 45.3 | 44.7 | 50.4% | 43~58 | 52 | 24 | 23 | 54% | 🔵 |
+| 대구 | 김부겸 vs 추경호 | 42.6 | 47.4 | 47.4% | 36~59 | 107 | 45 | 50 | 35% | 🔴 |
+| 경북 | 오중기 vs 국힘 | 27.3 | 62.7 | 30.3% | 23~38 | 126 | 34 | 79 | 2% | 🔴 |
+
+**전국: 총투표 ≈ 2,375만 → 민주 ≈ 1,257만 (58.8%) vs 국힘 ≈ 881만 (41.2%) (양당 기준).** 민주%+국힘% < 100인 차이는 제3당·무소속(약 10%) 몫.
 
 ### 클러스터 요약 (상관 군집)
 
@@ -105,7 +107,13 @@ Phone polls were essentially **unbiased**; the one miss (대전: polls D-lead �
 
 ## Predicted share + post-election scoring
 
-The model commits a predicted two-way share + win prob for every region (`forecast-national.json`). After polls close, fill `data/results-2026-actual.json` and `node score.mjs` grades it: **vote-share MAE, winner accuracy (X/16), Brier** (0.25 = no-skill). That number is the model's honest report card — and the real test of whether it clears ~90% winner accuracy.
+The model commits, per region, a **raw vote share (민주%/국힘%)**, a **two-way share**, **total voters**, vote counts, and a win probability (`forecast-national.json`). After polls close, fill `data/results-2026-actual.json` (`total_man`, `D_pct`, `P_pct`) and `node score.mjs` grades everything against a **±3% target**:
+
+- **vote-share error** (민주%/국힘% vs actual; ✓ if ≤3pt) + MAE,
+- **total-voters error** (% off; ✓ if ≤3%),
+- **two-way MAE**, **winner accuracy (X/16)**, **Brier** (0.25 = no-skill).
+
+Honest expectation on ±3%: the 2022 backtest had a **2.2pt share MAE** — so **vote-share ±3% is realistic on average** (not guaranteed in the tossups). **Total-voters ±3% is the harder one**: 선거인수 is known, but it hinges on the **turnout estimate**, which swings cycle-to-cycle (2018 60.2% → 2022 50.9%); plug exact 선관위 선거인수 + an election-eve turnout nowcast to actually hit it.
 
 ## Methodology deep-dive
 

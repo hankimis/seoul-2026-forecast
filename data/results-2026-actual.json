@@ -1,5 +1,5 @@
 {
-  "_note": "FILL after polls close (2026-06-03 18:00). Each region: actual two-way {D, P} vote %. score.mjs then grades the forecast.",
+  "_note": "FILL after 2026-06-03 18:00. region: { total_man: 총투표(만), D_pct: 민주 득표율%, P_pct: 국힘 득표율% } (raw % of all votes). score.mjs grades vs the forecast (±3% target).",
   "regions": {
     "서울": null, "부산": null, "대구": null, "인천": null, "대전": null, "세종": null,
     "경기": null, "강원": null, "충북": null, "충남": null, "전북": null, "전남광주": null,

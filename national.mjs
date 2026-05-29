@@ -33,8 +33,12 @@ function build(swing=SWING, useMethod=true) {
     const wPoll = n>=2?0.75:n===1?0.58:0;
     const finalD = pollD!=null&&fundD!=null ? wPoll*pollD+(1-wPoll)*fundD : pollD??fundD;
     const sigLoc = SIG_LOC + Math.min(spread/2,4);
-    const elig=vot.eligible_10k[r.region], tpc = elig!=null?elig*vot.turnout*vot.two_party_frac:null;
-    return {...r, fundD, pollD, finalD, n, spread, sigLoc, dVotes: tpc!=null?tpc*finalD/100:null, pVotes: tpc!=null?tpc*(100-finalD)/100:null, tpc};
+    const vr=vot.regions[r.region], frac=vot.two_party_frac;
+    const total = vr ? vr.eligible_10k*vr.turnout : null;     // 총투표(만) = 선거인수×투표율
+    const tpc = total!=null ? total*frac : null;              // 양당 득표(만)
+    const rawD = +(finalD*frac).toFixed(1), rawP = +((100-finalD)*frac).toFixed(1); // 원 득표율%
+    return {...r, fundD, pollD, finalD, n, spread, sigLoc, total, tpc, rawD, rawP,
+            dVotes: tpc!=null?tpc*finalD/100:null, pVotes: tpc!=null?tpc*(100-finalD)/100:null};
   });
 }
 const callCount = (rows)=> rows.filter(r=>r.finalD>50).length; // deterministic seat call
@@ -55,9 +59,9 @@ rows.sort((a,b)=>b.dwin-a.dwin);
 const f=(x)=>x==null?"  - ":x.toFixed(1).padStart(5);
 const win=(r)=>r.dwin>=0.5?"민주":"국힘", lab=(r)=>{const p=Math.max(r.dwin,1-r.dwin);return p>=0.85?"안정":p>=0.65?"우세":"경합";}, col=(r)=>r.dwin>=0.5?C.B:C.R;
 console.log(`\n${C.b}2026 광역단체장 ${rows.length} — v6${C.X} ${C.D}(2022 백테스트 보정 · 시나리오/구간/민감도)${C.X}\n`);
-console.log(`${C.D}지역      매치업                    예측D  90%구간     당선 확률 판정${C.X}`);
-console.log("-".repeat(82));
-for (const r of rows) console.log(`${r.region.padEnd(5)} ${(`${r.D} vs ${r.P}`).padEnd(23)} ${col(r)}${f(r.finalD)}%${C.X} [${r.lo.toFixed(0)}~${r.hi.toFixed(0)}]  ${col(r)}${win(r)} ${String(Math.round(r.dwin*100)).padStart(3)}%${C.X} ${lab(r)==="경합"?C.Y:""}${lab(r)}${C.X}`);
+console.log(`${C.D}지역      매치업                    민주%  국힘%  예측D(양자) 당선 확률 판정${C.X}`);
+console.log("-".repeat(90));
+for (const r of rows) console.log(`${r.region.padEnd(5)} ${(`${r.D} vs ${r.P}`).padEnd(23)} ${C.B}${f(r.rawD)}%${C.X} ${C.R}${f(r.rawP)}%${C.X} ${col(r)}${f(r.finalD)}%[${r.lo.toFixed(0)}~${r.hi.toFixed(0)}]${C.X} ${col(r)}${win(r)} ${String(Math.round(r.dwin*100)).padStart(3)}%${C.X} ${lab(r)==="경합"?C.Y:""}${lab(r)}${C.X}`);
 const callD=rows.filter(r=>r.dwin>=0.5).length, N=rows.length;
 const tip=[...rows].sort((a,b)=>Math.abs(a.finalD-50)-Math.abs(b.finalD-50))[0];
 const p=(c)=>(100*c/SIM).toFixed(0);
@@ -68,10 +72,10 @@ console.log(`${C.b}시나리오${C.X}: P(민주≥12)=${p(ge(12))}% · P(민주�
 
 // 득표수
 const mv=(x)=>x==null?"  -":x.toFixed(0).padStart(4);
-console.log(`\n${C.b}예측 득표수${C.X} ${C.D}(만표; 선거인수×투표율${vot.turnout}×양당${vot.two_party_frac})${C.X}`);
-for (const r of [...rows].sort((a,b)=>(b.dVotes??-1)-(a.dVotes??-1))) { if(r.dVotes==null)continue; const g=r.dVotes-r.pVotes; console.log(`${r.region.padEnd(5)} 민주 ${C.B}${mv(r.dVotes)}${C.X} 국힘 ${C.R}${mv(r.pVotes)}${C.X} 격차 ${g>=0?C.B:C.R}${(g>=0?"+":"")+g.toFixed(0)}만${C.X}`); }
-const totD=rows.reduce((s,r)=>s+(r.dVotes||0),0), totP=rows.reduce((s,r)=>s+(r.pVotes||0),0);
-console.log(`${C.D}전국: 민주 ${totD.toFixed(0)}만 vs 국힘 ${totP.toFixed(0)}만${C.X}`);
+console.log(`\n${C.b}총 투표자수 + 예측 득표수${C.X} ${C.D}(만표; 총투표=선거인수×투표율, 양당 ${vot.two_party_frac})${C.X}`);
+for (const r of [...rows].sort((a,b)=>(b.total??-1)-(a.total??-1))) { if(r.total==null)continue; const g=r.dVotes-r.pVotes; console.log(`${r.region.padEnd(5)} 총 ${C.b}${mv(r.total)}만${C.X} → 민주 ${C.B}${mv(r.dVotes)}${C.X} 국힘 ${C.R}${mv(r.pVotes)}${C.X} (격차 ${g>=0?C.B:C.R}${(g>=0?"+":"")+g.toFixed(0)}만${C.X})`); }
+const totV=rows.reduce((s,r)=>s+(r.total||0),0), totD=rows.reduce((s,r)=>s+(r.dVotes||0),0), totP=rows.reduce((s,r)=>s+(r.pVotes||0),0);
+console.log(`${C.D}전국: 총투표 ${totV.toFixed(0)}만 → 민주 ${totD.toFixed(0)}만 vs 국힘 ${totP.toFixed(0)}만${C.X}`);
 
 // 결정표 (경합 뒤집는 표)
 console.log(`\n${C.b}결정표${C.X} ${C.D}(경합지 뒤집는 데 필요한 표, 만)${C.X}`);
@@ -87,7 +91,7 @@ const noM=callCount(build(SWING,false)), sUp=callCount(build(SWING+0.15)), sDn=c
 console.log(`${C.b}민감도${C.X}(민주 우세지역 수): 기준 ${base0} · 방식보정無 ${noM} · 스윙+ ${sUp} · 스윙− ${sDn}`);
 console.log(`${C.D}보정: 방식 phone0/ars+${ADJ.ars}(2022 백테스트=전화 무편향) · σ_loc ${SIG_LOC}(백테스트 2.6) · swing ${SWING}.${C.X}`);
 
-writeFileSync(base("forecast-national.json"), JSON.stringify(rows.map(r=>({region:r.region,D:r.D,P:r.P,predicted_twoway_D:+(+r.finalD).toFixed(2),ci90:[+r.lo.toFixed(1),+r.hi.toFixed(1)],votes_man:{D:r.dVotes==null?null:+r.dVotes.toFixed(0),P:r.pVotes==null?null:+r.pVotes.toFixed(0)},dwin:+r.dwin.toFixed(3),winner:win(r)})),null,2));
+writeFileSync(base("forecast-national.json"), JSON.stringify(rows.map(r=>({region:r.region,D:r.D,P:r.P,predicted_twoway_D:+(+r.finalD).toFixed(2),ci90:[+r.lo.toFixed(1),+r.hi.toFixed(1)],raw_share_pct:{D:r.rawD,P:r.rawP},total_votes_man:r.total==null?null:+r.total.toFixed(0),votes_man:{D:r.dVotes==null?null:+r.dVotes.toFixed(0),P:r.pVotes==null?null:+r.pVotes.toFixed(0)},dwin:+r.dwin.toFixed(3),winner:win(r)})),null,2));
 
 // meta dump (seat distribution + scenarios) for dist.mjs
 const seatHist = Array(N+1).fill(0); for (const s of seats) seatHist[s]++;
