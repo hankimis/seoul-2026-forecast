@@ -1,37 +1,53 @@
-// National roll-up for the 17 metropolitan races. Poll regions: two-way D share
-// + Monte-Carlo win prob (sigma = historical two-way polling error ~3.2pt).
-// Classified regions: nominal D-win prob by tier. Prints a table + seat tally.
+// National roll-up, v2 (bias-corrected, uncertainty-widened, correlated swing).
+// Fixes from the self-audit:
+//  - sigma 3.2 -> 4.5 (two-way) to capture systematic + correlated polling error
+//  - win prob capped to [5%, 95%] (no 100% certainties)
+//  - conservative-region adjustment: 영남(부산·대구·울산·경남)·경북·강원 D two-way -3.0pt,
+//    충청(충북·충남) -1.0pt (documented Korean poll underestimate of conservatives / 샤이보수)
+//  - national correlated swing: each Monte-Carlo draw shares a common D-swing term,
+//    so the SEAT total has realistic (wide) uncertainty, not artificially tight.
 //   node national.mjs
 import { readFileSync } from "node:fs";
 const d = JSON.parse(readFileSync(new URL("./data/national-2026.json", import.meta.url)));
-const SIM = 50000, SIGMA = 3.2;
+const SIM = 50000, SIG_LOCAL = 3.2, SIG_NATIONAL = 3.0; // local idiosyncratic + shared national error
+const CONS = { 부산: 3, 대구: 3, 울산: 3, 경남: 3, 경북: 3, 강원: 3, 충북: 1, 충남: 1 }; // D two-way penalty
 const z = () => Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random());
+const cap = (p) => Math.max(0.05, Math.min(0.95, p));
 
-function winFromPoll(p) {
-  const tw = 100 * p.D / (p.D + p.P); // two-way D
-  let w = 0; for (let i = 0; i < SIM; i++) if (tw + z() * SIGMA > 50) w++;
-  return { twD: +tw.toFixed(1), dwin: +(w / SIM).toFixed(2) };
-}
-
+// adjusted two-way D for poll regions; tier regions keep a nominal mean two-way from tier_dwin
+const tierMeanTwo = { safe_D: 62, lean_D: 55, tossup_D: 51.5, tossup_P: 48, lean_P: 45, safe_P: 36 };
 const rows = d.regions.map((r) => {
-  if (r.poll) { const { twD, dwin } = winFromPoll(r.poll); return { ...r, twD, dwin, basis: "poll" }; }
-  return { ...r, twD: null, dwin: d.tier_dwin[r.tier] ?? 0.5, basis: "tier:" + r.tier };
+  let twD;
+  // conservative correction applies to RAW polls only; tiers already encode partisanship.
+  if (r.poll) twD = 100 * r.poll.D / (r.poll.D + r.poll.P) - (CONS[r.region] || 0);
+  else twD = tierMeanTwo[r.tier] ?? 50;
+  return { ...r, twD: +twD.toFixed(1), basis: r.poll ? "poll" : "tier:" + r.tier };
 });
+
+// Monte Carlo with a shared national swing each draw (correlated error)
+const wins = rows.map(() => 0);
+let dSeats = [];
+for (let i = 0; i < SIM; i++) {
+  const nat = z() * SIG_NATIONAL; // common swing this election
+  let s = 0;
+  rows.forEach((r, k) => { const draw = r.twD + nat + z() * SIG_LOCAL; if (draw > 50) { wins[k]++; s++; } });
+  dSeats.push(s);
+}
+dSeats.sort((a, b) => a - b);
+rows.forEach((r, k) => { r.dwin = cap(wins[k] / SIM); });
 rows.sort((a, b) => b.dwin - a.dwin);
 
+const win = (r) => r.dwin >= 0.5 ? "민주" : "국힘";
+const lab = (r) => { const p = Math.max(r.dwin, 1 - r.dwin); return p >= 0.85 ? "안정" : p >= 0.65 ? "우세" : "경합"; };
 const f = (x) => x == null ? "  -  " : (x + "%").padStart(5);
-console.log("\n2026 광역단체장 17 — 폴 앵커 예측 (D=민주, P=국힘)\n");
-console.log("지역   매치업                     양자D   D승리확률  근거");
-console.log("-".repeat(74));
+console.log("\n2026 광역단체장 17 — v2 (보정·보수 조정·상관오차)\n");
+console.log("지역  매치업                     양자D*  당선예측  D승리   판정  근거");
+console.log("-".repeat(78));
 for (const r of rows) {
-  const match = `${r.D} vs ${r.P}`.padEnd(24);
-  const bar = "■".repeat(Math.round(r.dwin * 10)).padEnd(10, "·");
-  console.log(`${r.region.padEnd(4)} ${match} ${f(r.twD)}  ${String(Math.round(r.dwin * 100)).padStart(3)}% ${bar} ${r.basis}`);
+  console.log(`${r.region.padEnd(3)} ${(`${r.D} vs ${r.P}`).padEnd(24)} ${f(r.twD)}  ${win(r).padEnd(4)}  ${String(Math.round(r.dwin*100)).padStart(3)}%  ${lab(r).padEnd(4)} ${r.basis}`);
 }
-const expD = rows.reduce((s, r) => s + r.dwin, 0);
 const callD = rows.filter((r) => r.dwin >= 0.5).length;
-const tossup = rows.filter((r) => r.dwin > 0.4 && r.dwin < 0.6).length;
-console.log("-".repeat(74));
-console.log(`예상 민주 의석(확률합): ${expD.toFixed(1)} / 17   ·   우세지역 카운트(>50%): 민주 ${callD}, 국힘 ${17 - callD}   ·   초경합(40~60%): ${tossup}곳`);
-console.log("\n경합지(40~60%):", rows.filter((r) => r.dwin > 0.4 && r.dwin < 0.6).map((r) => r.region).join(", "));
-console.log("주의: 폴 11곳은 실측, 6곳은 성향+2026 여당파동 분류(라벨 tier). 부산 '샤이보수', 울산 단일화 변수 등 미반영.");
+console.log("-".repeat(78));
+console.log(`예상 민주 의석 중앙값 ${dSeats[Math.floor(SIM*0.5)]} (90% 범위 ${dSeats[Math.floor(SIM*0.05)]}~${dSeats[Math.floor(SIM*0.95)]}) / 17  ·  현재 우세 카운트: 민주 ${callD}·국힘 ${17-callD}`);
+console.log("경합(판정=경합):", rows.filter((r)=>Math.max(r.dwin,1-r.dwin)<0.65).map((r)=>r.region).join(", "));
+console.log("* 양자D는 보수지역 보정(영남·강원 -3, 충청 -1) 반영치. 폴 11곳 실측·6곳 분류.");
