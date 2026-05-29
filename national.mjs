@@ -49,13 +49,16 @@ seats.sort((a, b) => a - b);
 rows.forEach((r, k) => { r.dwin = cap(wins[k] / SIM); });
 rows.sort((a, b) => b.dwin - a.dwin);
 
+const C = { B: "\x1b[36m", R: "\x1b[31m", Y: "\x1b[33m", G: "\x1b[32m", D: "\x1b[2m", b: "\x1b[1m", X: "\x1b[0m" };
 const f = (x) => x == null ? "  - " : (x.toFixed(1)).padStart(5);
 const win = (r) => r.dwin >= 0.5 ? "민주" : "국힘";
+const col = (r) => r.dwin >= 0.5 ? C.B : C.R;
 const lab = (r) => { const p = Math.max(r.dwin, 1 - r.dwin); return p >= 0.85 ? "안정" : p >= 0.65 ? "우세" : "경합"; };
-console.log("\n2026 광역단체장 17 — v4 (펀더멘털 2022+스윙 ⊕ 폴, 상관오차)\n");
-console.log("지역  매치업                    펀더D  폴D   최종D  당선  확률  판정  폴?");
+console.log(`\n${C.b}2026 광역단체장 17 — v4${X1()} ${C.D}(펀더멘털 2022+스윙 ⊕ 폴, 상관오차)${X1()}\n`);
+console.log(`${C.D}지역  매치업                    펀더D  폴D   최종D  당선  확률  판정  폴?${X1()}`);
 console.log("-".repeat(82));
-for (const r of rows) console.log(`${r.region.padEnd(3)} ${(`${r.D} vs ${r.P}`).padEnd(23)} ${f(r.fundD)} ${f(r.pollD)} ${f(r.finalD)}  ${win(r).padEnd(4)} ${String(Math.round(r.dwin*100)).padStart(3)}%  ${lab(r).padEnd(4)} ${r.hasPoll?"폴":"펀"}`);
+for (const r of rows) console.log(`${r.region.padEnd(3)} ${(`${r.D} vs ${r.P}`).padEnd(23)} ${f(r.fundD)} ${f(r.pollD)} ${col(r)}${f(r.finalD)}  ${win(r).padEnd(4)} ${String(Math.round(r.dwin*100)).padStart(3)}%${C.X}  ${lab(r)==="경합"?C.Y:""}${lab(r).padEnd(4)}${C.X} ${r.hasPoll?"폴":C.D+"펀"+C.X}`);
+function X1(){return C.X;}
 const callD = rows.filter((r) => r.dwin >= 0.5).length;
 // tipping point = region nearest 50% final (pivotal seat)
 const tip = [...rows].sort((a, b) => Math.abs(a.finalD - 50) - Math.abs(b.finalD - 50))[0];

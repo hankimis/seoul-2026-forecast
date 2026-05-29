@@ -1,47 +1,68 @@
-# Seoul 2026 — LLM Persona Electorate Forecast (sealed)
+# 2026 Korean Local Elections — Forecast (private research)
 
-Can an LLM-simulated electorate forecast a real election? This is a **pre-registered, sealed** forecast of the **2026 Seoul mayoral election (2026-06-03)** using a synthetic electorate of demographically grounded voter personas, scored against the actual result after polls close.
+Forecasting all 17 metropolitan mayor/governor races of the **2026-06-03** Korean local election, two ways: a poll + fundamentals model (the one that works) and an LLM-persona electorate simulation (the experiment that taught us what *doesn't*). Internal research, kept private.
 
-> ⚠️ **Korean election law (공직선거법 제108조).** From **6 days before the election (2026-05-28) until polls close (06-03 18:00)**, publishing any poll or simulation that predicts a winner — explicitly including "모의투표/인기투표" — is **illegal** (criminal penalty). Therefore: **no prediction is published during the blackout.** We publish only a SHA-256 **commitment hash** (which reveals nothing) and the methodology, then **reveal the forecast after 18:00 on 06-03**. This repo stays **private** until reveal; `prediction*.json` is git-ignored so a forecast can never be pushed by accident.
+![national forecast v4](docs/national.gif)
 
-## Design
+> ⚠️ **Private / election law.** Korea's 공직선거법 제108조 bans publishing any election forecast during the blackout (2026-05-28 → 06-03 18:00). This repo stays private; nothing here is published until after polls close.
 
-One mechanism, two phases:
+## TL;DR — national v4 forecast
 
-- **Phase A — backtest (legal anytime).** Run the exact pipeline on past Korean elections with known results (2022 Seoul mayor, 2024 Seoul districts) to validate and calibrate. Caveat: models may have memorized past results, so this tests the pipeline + bias, not clean prediction.
-- **Phase B — live sealed forecast.** Generate the 2026 forecast privately, seal its hash before 06-03, reveal and compare after polls close. This is the uncontaminated test (no model can know the outcome).
+- **민주(여당) median 13 / 17 seats** (90% range 8–16); **국힘** safe only in **대구·경북**.
+- Everything else leans 민주, but **five tossups sit at D 51–52% two-way**: 충북·경남·부산·충남·울산.
+- **Tipping point: 울산** (final 50.9%, D 57%). A ~3pt systematic poll miss toward 국힘 flips the whole tossup cluster → seats fall to ~8.
+- Big picture: a ruling-party (민주, post-2025 presidential win) wave; even 부산·경남 lean 민주 on the polls.
 
-## Ethics & guardrails
+## Two experiments, and what we learned
 
-- Personas are **demographic composites from public distributions**, never impersonations of identifiable real people; we do not deepfake or simulate named individuals (including the candidates).
-- **No voter-facing output, no targeting, no campaigning.** Pure post-hoc forecast.
-- Calibration uses only polls published **on or before 2025-05-27** (pre-blackout).
-- Everything (data, prompts, code) is reproducible and disclosed after reveal.
+**A. Poll + fundamentals model (`national.mjs`) — the credible one.**
+538-style: each region's **fundamentals** = its 2022 two-way 민주 share swung to the 2026 environment **on the logit scale** (so strongholds move less), **blended 0.7 / 0.3 with the poll aggregate**, then a **correlated-national-swing Monte Carlo** (50k draws) for win probabilities, capped 3–97%.
 
-## Method
+**B. LLM-persona electorate (`forecast.mjs`, Seoul only) — the cautionary tale.**
+A detailed synthetic electorate (district × age × gender × housing × job × income) is asked, across multiple LLMs, for vote + turnout; poststratified, calibrated against a 2022 backtest, blended with polls. **Finding: even calibrated, the LLM sim leaned 오세훈 while every real poll had 정원오 ahead.** The models carry an incumbent/conservative prior that contradicts reality. *Does the LLM add information beyond polls? Here, no — it adds noise and bias.* That negative result is the honest contribution.
 
-1. `personas.mjs` builds a stratified synthetic electorate from `data/seoul-demographics.json` (age × gender shares; districts to be added from official data).
-2. `forecast.mjs` asks each persona, across multiple LLMs, for a vote + turnout likelihood, then aggregates a **turnout-weighted vote share** and a cross-model comparison (to expose the known LLM partisan bias).
-3. `seal.mjs` hashes the prediction into a public commitment; the prediction itself stays private until reveal.
+### Version history (how the model earned trust)
+
+| ver | change | lesson |
+|---|---|---|
+| v1 | naive average of 3 LLMs | mode collapse (haiku 100%), rate-limit n-imbalance → unusable |
+| v2 | cap + hand-tuned −3 영남 correction + correlated swing | better, but the correction was a guess |
+| v3 | **538-style fundamentals (2022 logit-swing) ⊕ polls**; dropped the hand-tuned correction | 2022 경기 (polls had 국힘 +8, 민주 won) proved poll bias is **not one-directional** → regularize with fundamentals + wide σ, not a one-way nudge |
+| v4 | **poll-backed every competitive region** (강원·울산·제주 added) | only 호남3 + 경북 remain fundamentals-only (lopsided, accurate). 울산 flipped to 민주-lean once its poll was in |
+
+## National v4 — all 17
+
+민주(파랑) median 13, 국힘(빨강) 대구·경북. 경합(노랑): 충북·경남·부산·충남·울산. See the GIF for the live table; values in `data/national-2026.json` (+ `node national.mjs`).
+
+Safe 민주: 광주·전남·전북·제주·경기·인천·대전·세종·강원 · Lean 민주: 서울 · Tossup-민주: 충북·경남·부산·충남·울산 · 국힘: 대구·경북.
 
 ## Run
 
 ```bash
-node personas.mjs 800                 # build the electorate
-# backtest (known result; leakage caveat applies):
-OPENAI_API_KEY=.. FAL_API_KEY=.. node forecast.mjs --candidates data/elections/2022-seoul-mayor.json --year 2022 --backtest
-# live (after filling data/candidates-2026.json from the official NEC registration):
-OPENAI_API_KEY=.. FAL_API_KEY=.. node forecast.mjs --candidates data/candidates-2026.json --year 2026
-node seal.mjs seal prediction.json    # publish SEALED.txt's hash; keep prediction.json private until 06-03 18:00
+node national.mjs            # national poll+fundamentals model (no API cost)
+
+# Seoul LLM-persona experiment (needs keys; costs a few $):
+ANTHROPIC_API_KEY=.. OPENAI_API_KEY=.. node personas.mjs 800
+ANTHROPIC_API_KEY=.. OPENAI_API_KEY=.. node forecast.mjs --candidates data/candidates-2026.json --year 2026 --polls data/polls-2026.json
+# calibrate first on 2022:  node forecast.mjs --candidates data/elections/2022-seoul-mayor.json --year 2022 --backtest --actualA 59.05
+docs/demo.tape               # vhs docs/demo.tape -> docs/national.gif
 ```
 
-## Honest limits
+## Files
 
-- A single election is **n=1**, a case study, not proof. Phase A backtests are the methodological core.
-- LLM **partisan bias** is well documented; raw and calibrated numbers are both reported.
-- **Turnout modeling** is the largest error source.
-- Demographic and result data in `data/` are **approximate placeholders** until replaced with official KOSIS / 선관위 figures.
+- `national.mjs` · `data/national-2026.json` (17 regions, polls/tier) · `data/results-2022.json` (fundamentals) · `data/polls-2026.json` (Seoul 5-poll aggregate)
+- `forecast.mjs` · `personas.mjs` · `data/seoul-demographics.json` · `calibration.json` (2022 model weights)
+- `seal.mjs` (sealed pre-registration tool — unused now that we publish nothing)
+- `prediction*.json` are git-ignored.
 
-## Status
+## Honest limitations
 
-Pipeline, sealing tool, and protocol are in place. Live forecast is generated and sealed before 06-03; revealed and scored after. Part of IOV LABS research, methodology only is public-safe; the live forecast is withheld per the blackout.
+- **The five tossups are all D 51–52%** — within one normal polling miss of flipping together. The 90% seat range (8–16) reflects this; don't read the median 13 as safe.
+- **Fundamentals, swing (+8pt), blend (0.7), σ (3.5+3.5) are estimates**; 2022 region results and some 2026 polls are approximate (verify vs 선관위/NESDC).
+- **울산** hinges on the 진보(김종훈) 단일화/분열; **전북** is 민주 vs 무소속(김관영), not vs 국힘; non-Seoul regions mostly use a single poll, not an aggregate.
+- Korea facts gathered via web (model knowledge cutoff Jan 2026).
+- The LLM-persona pipeline is kept for the methodological comparison; it is **not** the basis of the headline forecast.
+
+## Validation
+
+The real test is the **2026-06-03 result**: score v1–v4 and poll-only against all 17 to confirm which method (and which σ/swing/blend) was right.
