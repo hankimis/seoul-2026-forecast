@@ -1,0 +1,23 @@
+{
+  "_note": "2022 (8th local) metropolitan results as a FUNDAMENTALS baseline (each region's structural lean). d_twoway = 더불어민주당 two-way vote share %. APPROXIMATE from memory of the 2022 outcome; VERIFY against 선관위 before relying. National 2022: PPP 53.13% / D 43.26% (PPP won 12, D won 5: 경기·광주·전남·전북·제주).",
+  "national_d_twoway_2022": 44.9,
+  "regions": {
+    "서울": { "d_twoway": 39.9, "winner": "P" },
+    "부산": { "d_twoway": 33.6, "winner": "P" },
+    "대구": { "d_twoway": 19.0, "winner": "P" },
+    "인천": { "d_twoway": 46.3, "winner": "P" },
+    "광주": { "d_twoway": 85.0, "winner": "D" },
+    "대전": { "d_twoway": 48.8, "winner": "P" },
+    "울산": { "d_twoway": 40.1, "winner": "P" },
+    "세종": { "d_twoway": 47.1, "winner": "P" },
+    "경기": { "d_twoway": 50.1, "winner": "D" },
+    "강원": { "d_twoway": 45.9, "winner": "P" },
+    "충북": { "d_twoway": 41.8, "winner": "P" },
+    "충남": { "d_twoway": 46.1, "winner": "P" },
+    "전북": { "d_twoway": 84.0, "winner": "D" },
+    "전남": { "d_twoway": 88.0, "winner": "D" },
+    "경북": { "d_twoway": 24.0, "winner": "P" },
+    "경남": { "d_twoway": 36.9, "winner": "P" },
+    "제주": { "d_twoway": 56.6, "winner": "D" }
+  }
+}
