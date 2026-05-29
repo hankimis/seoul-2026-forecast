@@ -52,7 +52,7 @@ rows.sort((a, b) => b.dwin - a.dwin);
 const f = (x) => x == null ? "  - " : (x.toFixed(1)).padStart(5);
 const win = (r) => r.dwin >= 0.5 ? "민주" : "국힘";
 const lab = (r) => { const p = Math.max(r.dwin, 1 - r.dwin); return p >= 0.85 ? "안정" : p >= 0.65 ? "우세" : "경합"; };
-console.log("\n2026 광역단체장 17 — v3 (펀더멘털 2022+스윙 ⊕ 폴, 상관오차)\n");
+console.log("\n2026 광역단체장 17 — v4 (펀더멘털 2022+스윙 ⊕ 폴, 상관오차)\n");
 console.log("지역  매치업                    펀더D  폴D   최종D  당선  확률  판정  폴?");
 console.log("-".repeat(82));
 for (const r of rows) console.log(`${r.region.padEnd(3)} ${(`${r.D} vs ${r.P}`).padEnd(23)} ${f(r.fundD)} ${f(r.pollD)} ${f(r.finalD)}  ${win(r).padEnd(4)} ${String(Math.round(r.dwin*100)).padStart(3)}%  ${lab(r).padEnd(4)} ${r.hasPoll?"폴":"펀"}`);
