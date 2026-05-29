@@ -1,0 +1,9 @@
+{
+  "_note": "Turnout nowcast from early voting (사전투표 5/29-30). final_turnout ≈ early_vote_turnout / early_share. early_share calibrated from history (2018 33.4%, 2022 40.5%, 2024총선 46.7% → rising; use ~0.43 for 2026). FILL early_vote_turnout_pct with the 5/30 18:00 FINAL 사전투표율 (national) — placeholder is a record-ish estimate per day-1 reports.",
+  "early_vote_turnout_pct": 22.5,
+  "early_share": 0.43,
+  "history": [
+    { "year": 2018, "early": 20.1, "final": 60.2, "early_share": 0.334 },
+    { "year": 2022, "early": 20.6, "final": 50.9, "early_share": 0.405 }
+  ]
+}

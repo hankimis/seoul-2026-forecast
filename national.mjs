@@ -10,6 +10,13 @@ const base = (p) => new URL(`./${p}`, import.meta.url);
 const nat = JSON.parse(readFileSync(base("data/national-2026.json")));
 const fund = JSON.parse(readFileSync(base("data/results-2022.json")));
 const vot = JSON.parse(readFileSync(base("data/voters-2026.json")));
+// v7: turnout nowcast from early-voting data. final ≈ early / early_share; scale the
+// per-region turnout priors so their eligible-weighted average matches the nowcast.
+const tn = JSON.parse(readFileSync(base("data/turnout-2026.json")));
+const nowcastNat = tn.early_vote_turnout_pct/100 / tn.early_share;
+const eW = Object.values(vot.regions);
+const priorNat = eW.reduce((s,v)=>s+v.eligible_10k*v.turnout,0) / eW.reduce((s,v)=>s+v.eligible_10k,0);
+const TURNOUT_SCALE = nowcastNat / priorNat;
 const ADJ = nat.config.method_twoway_adj;
 const SWING = 0.32, SIG_NAT = 2.5, SIG_CLU = 2.5, SIG_LOC = 2.8, SIM = 50000; // σ from 2022 backtest
 const logit = (p)=>Math.log(p/(1-p)), invlogit=(x)=>1/(1+Math.exp(-x));
@@ -34,7 +41,8 @@ function build(swing=SWING, useMethod=true) {
     const finalD = pollD!=null&&fundD!=null ? wPoll*pollD+(1-wPoll)*fundD : pollD??fundD;
     const sigLoc = SIG_LOC + Math.min(spread/2,4);
     const vr=vot.regions[r.region], frac=vot.two_party_frac;
-    const total = vr ? vr.eligible_10k*vr.turnout : null;     // 총투표(만) = 선거인수×투표율
+    const effTurnout = vr ? vr.turnout*TURNOUT_SCALE : null;  // early-voting nowcast applied
+    const total = vr ? vr.eligible_10k*effTurnout : null;     // 총투표(만) = 선거인수×투표율(nowcast)
     const tpc = total!=null ? total*frac : null;              // 양당 득표(만)
     const rawD = +(finalD*frac).toFixed(1), rawP = +((100-finalD)*frac).toFixed(1); // 원 득표율%
     return {...r, fundD, pollD, finalD, n, spread, sigLoc, total, tpc, rawD, rawP,
@@ -58,7 +66,7 @@ rows.sort((a,b)=>b.dwin-a.dwin);
 
 const f=(x)=>x==null?"  - ":x.toFixed(1).padStart(5);
 const win=(r)=>r.dwin>=0.5?"민주":"국힘", lab=(r)=>{const p=Math.max(r.dwin,1-r.dwin);return p>=0.85?"안정":p>=0.65?"우세":"경합";}, col=(r)=>r.dwin>=0.5?C.B:C.R;
-console.log(`\n${C.b}2026 광역단체장 ${rows.length} — v6${C.X} ${C.D}(2022 백테스트 보정 · 시나리오/구간/민감도)${C.X}\n`);
+console.log(`\n${C.b}2026 광역단체장 ${rows.length} — v7${C.X} ${C.D}(2022 백테스트 보정 · 시나리오/구간/민감도)${C.X}\n`);
 console.log(`${C.D}지역      매치업                    민주%  국힘%  예측D(양자) 당선 확률 판정${C.X}`);
 console.log("-".repeat(90));
 for (const r of rows) console.log(`${r.region.padEnd(5)} ${(`${r.D} vs ${r.P}`).padEnd(23)} ${C.B}${f(r.rawD)}%${C.X} ${C.R}${f(r.rawP)}%${C.X} ${col(r)}${f(r.finalD)}%[${r.lo.toFixed(0)}~${r.hi.toFixed(0)}]${C.X} ${col(r)}${win(r)} ${String(Math.round(r.dwin*100)).padStart(3)}%${C.X} ${lab(r)==="경합"?C.Y:""}${lab(r)}${C.X}`);
@@ -72,7 +80,8 @@ console.log(`${C.b}시나리오${C.X}: P(민주≥12)=${p(ge(12))}% · P(민주�
 
 // 득표수
 const mv=(x)=>x==null?"  -":x.toFixed(0).padStart(4);
-console.log(`\n${C.b}총 투표자수 + 예측 득표수${C.X} ${C.D}(만표; 총투표=선거인수×투표율, 양당 ${vot.two_party_frac})${C.X}`);
+console.log(`\n${C.b}투표율 nowcast${C.X} ${C.D}사전 ${tn.early_vote_turnout_pct}% ÷ 사전비중 ${tn.early_share} → 최종 ${C.X}${C.b}${(nowcastNat*100).toFixed(1)}%${C.X} ${C.D}(prior ${(priorNat*100).toFixed(1)}%, ×${TURNOUT_SCALE.toFixed(3)})${C.X}`);
+console.log(`\n${C.b}총 투표자수 + 예측 득표수${C.X} ${C.D}(만표; 총투표=선거인수×nowcast투표율, 양당 ${vot.two_party_frac})${C.X}`);
 for (const r of [...rows].sort((a,b)=>(b.total??-1)-(a.total??-1))) { if(r.total==null)continue; const g=r.dVotes-r.pVotes; console.log(`${r.region.padEnd(5)} 총 ${C.b}${mv(r.total)}만${C.X} → 민주 ${C.B}${mv(r.dVotes)}${C.X} 국힘 ${C.R}${mv(r.pVotes)}${C.X} (격차 ${g>=0?C.B:C.R}${(g>=0?"+":"")+g.toFixed(0)}만${C.X})`); }
 const totV=rows.reduce((s,r)=>s+(r.total||0),0), totD=rows.reduce((s,r)=>s+(r.dVotes||0),0), totP=rows.reduce((s,r)=>s+(r.pVotes||0),0);
 console.log(`${C.D}전국: 총투표 ${totV.toFixed(0)}만 → 민주 ${totD.toFixed(0)}만 vs 국힘 ${totP.toFixed(0)}만${C.X}`);
