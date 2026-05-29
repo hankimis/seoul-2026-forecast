@@ -14,7 +14,7 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 ---
 
 ## Contents
-1. [TL;DR](#tldr--v8-forecast) · 2. [Why two experiments](#the-two-experiments) · 3. [Version history](#version-history) · 4. [Full forecast (16)](#v8-forecast--all-16) · 5. [Seat distribution](#seat-distribution--scenarios) · 6. [Calibration (2022 backtest)](#empirical-calibration--2022-backtest) · 7. [Scoring](#predicted-share--post-election-scoring) · 8. [Methodology deep-dive](#methodology-deep-dive) · 9. [Formal specification](#formal-model-specification) (notation · parameters · data · uncertainty) · 10. [The LLM experiment](#the-llm-experiment-in-detail) · 11. [Prior art](#prior-art--related-work) · 12. [Reproducibility](#reproducibility) · 13. [Glossary](#glossary) · 14. [What could go wrong](#what-could-still-go-wrong) · 15. [Roadmap](#roadmap-v8-ideas) · 16. [Limitations + assumptions ledger](#honest-limitations)
+1. [TL;DR](#tldr--v8-forecast) · 2. [Why two experiments](#the-two-experiments) · 3. [Version history](#version-history) · 4. [Full forecast (16)](#v8-forecast--all-16) · 5. [Seat distribution](#seat-distribution--scenarios) · 6. [Calibration (2022 backtest)](#empirical-calibration--2022-backtest) · 7. [Scoring](#predicted-share--post-election-scoring) · 8. [Methodology deep-dive](#methodology-deep-dive) · 9. [Formal specification](#formal-model-specification) (notation · parameters · data · uncertainty) · 10. [The LLM experiment](#the-llm-experiment-in-detail) · 11. [Prior art](#prior-art--related-work) · 12. [Reproducibility](#reproducibility) · 13. [Epistemics & philosophy](#on-forecasting--epistemics--philosophy) · 14. [Glossary](#glossary) · 15. [What could go wrong](#what-could-still-go-wrong) · 16. [Roadmap](#roadmap-v8-ideas) · 17. [Limitations + assumptions ledger](#honest-limitations)
 
 ---
 
@@ -93,6 +93,12 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 | 호남 | 전남광주·전북 | 민주 압도 |
 | 강원/제주 | 강원·제주 | 민주 우세 |
 
+### 지역별 승리확률 & 90% 구간
+
+각 지역의 중심추정(●), 양자 90% 구간(━), 50% 동률선(│)을 한눈에. 경합 5곳(서울·부산·경남·충북·울산)의 구간이 50%선을 물고 있는 게 핵심 — 이 다섯이 함께 흔들리면 의석 중앙값이 통째로 움직인다.
+
+![per-region win probability and intervals](docs/probs.gif)
+
 ## Seat distribution · scenarios
 
 ![seat distribution](docs/seats.gif)
@@ -133,6 +139,25 @@ Honest expectation on ±3%: the 2022 backtest had a **2.2pt share MAE** — so *
 
 ## Methodology deep-dive
 
+The pipeline turns two noisy signals (structural history + current polls) into one calibrated probability distribution over seats:
+
+```mermaid
+flowchart TD
+    A["2022 결과<br/>results-2022.json"] -->|"logit-swing s=0.32"| F["펀더멘털 φ_r"]
+    B["2026 여론조사<br/>national-2026.json"] -->|"방식 보정 δ(ARS/phone)"| P["정규화 폴평균 π_r"]
+    F --> M["계층 블렌딩<br/>μ_r = w·π + (1−w)·φ"]
+    P --> M
+    M --> MC["상관·두꺼운꼬리<br/>몬테카를로 50k<br/>ε_nat ⊕ ε_clu ⊕ ε_loc"]
+    V["선거인수·투표율<br/>voters / turnout nowcast"] --> CNT["득표수 V_r = E·t·β"]
+    M --> CNT
+    MC --> OUT["승리확률 · 의석분포<br/>90% 구간 · 시나리오"]
+    CNT --> OUT
+    OUT -.->|"개표 후 사전확정 채점"| SC["score.mjs<br/>Brier · MAE · 적중"]
+    style MC fill:#1f6feb,color:#fff
+    style OUT fill:#238636,color:#fff
+    style SC fill:#8957e5,color:#fff
+```
+
 1. **Fundamentals (structural lean).** Each region's 2022 two-way 민주 share `f` is swung to the 2026 environment on the **logit scale**: `fund = invlogit(logit(f) + 0.32)` (≈ +8pt at a 50/50 region, less at the extremes — so 호남/경북 barely move while swing regions move most).
 2. **Method normalization.** Each poll is tagged phone / ARS / mix. ARS systematically shows tighter races (샤이보수 / high-engagement respondents); phone shows bigger 여당 leads and — per the 2022 backtest — was the *accurate* one. So polls are normalized toward the phone basis (`ARS +5`, `mix +2`, `phone 0` two-way 민주).
 3. **Multi-poll aggregation.** A region's polls are averaged after normalization; their raw spread is recorded as a method/house-disagreement signal.
@@ -149,7 +174,7 @@ For region $r$ with 2022 two-way 민주 share $f_r$ (percent), polls $\{(D_j,P_j
 
 **1. Fundamentals (logit-swing).** Swinging on the log-odds scale keeps the estimate in $(0,100)$ and moves competitive regions more than strongholds:
 
-$$\varphi_r = 100\cdot\sigma\!\left(\operatorname{logit}(f_r/100) + s\right),\qquad s = 0.32,\quad \sigma(x)=\frac{1}{1+e^{-x}}.$$
+$$\varphi_r = 100\cdot\sigma\!\left(\mathrm{logit}(f_r/100) + s\right),\qquad s = 0.32,\quad \sigma(x)=\frac{1}{1+e^{-x}}.$$
 
 **2. Method-normalized poll mean.** Each poll's two-way share $p_j = 100\,D_j/(D_j+P_j)$ is shifted to the phone basis by a house-effect offset $\delta(m)$, then averaged:
 
@@ -165,7 +190,7 @@ $$d_r^{(i)} = \mu_r + \varepsilon^{(i)}_{\text{nat}} + \varepsilon^{(i)}_{c(r)} 
 
 Each $\varepsilon$ is drawn from a **two-component normal mixture** (variance-inflating heavy tail, approximating Student-t):
 
-$$\varepsilon \sim \begin{cases} \mathcal N(0,\ \sigma^2) & \text{w.p. } 0.88\\ \mathcal N(0,\ (2.4\,\sigma)^2) & \text{w.p. } 0.12\end{cases}\qquad\Rightarrow\quad \operatorname{Var}(\varepsilon)=\bigl(0.88+0.12\cdot 2.4^2\bigr)\sigma^2 = 1.57\,\sigma^2,$$
+$$\varepsilon \sim \begin{cases} \mathcal N(0,\ \sigma^2) & \text{w.p. } 0.88\\ \mathcal N(0,\ (2.4\,\sigma)^2) & \text{w.p. } 0.12\end{cases}\qquad\Rightarrow\quad \mathrm{Var}(\varepsilon)=\bigl(0.88+0.12\cdot 2.4^2\bigr)\sigma^2 = 1.57\,\sigma^2,$$
 
 with $\sigma_{\text{nat}}=\sigma_{\text{clu}}=2.5$ and $\sigma_{\text{loc},r}=2.8+\min(\text{spread}_r/2,\,4)+\kappa(n_r)$, where $\kappa(0)=1.6,\ \kappa(1)=0.7,\ \kappa(\ge2)=0$. The win probability and seat distribution are Monte-Carlo estimates:
 
@@ -254,6 +279,26 @@ This model is deliberately conventional — it implements well-established forec
 - **One command** reproduces the headline numbers; the GIFs regenerate from `docs/*.tape` via `vhs`.
 - **Pre-committed scoring.** `score.mjs` and the target metric (±3%) are fixed *before* the result is known, so the post-election grade cannot be retrofitted.
 
+## On forecasting — epistemics & philosophy
+
+A forecast is not a prophecy. It is a **structured, falsifiable statement of uncertainty** about a future that has not happened and will happen exactly once. That single sentence carries most of the hard problems, so it is worth being explicit about what this model claims to know, and what it cannot.
+
+**1. What does "민주 73% in 서울" even mean?** 서울 votes once; there is no long run in which it is held 100 times and 민주 wins 73 of them. The number is therefore not a frequency but a **degree of belief** — a Bayesian/subjective probability conditioned on the data and assumptions in this repo. Its only honest test is **calibration across many such claims**: if everything I call "70%" wins about 70% of the time and everything I call "90%" wins about 90%, the probabilities mean something. That is precisely why the model commits 16 simultaneous probabilities and scores them with a **Brier** number — one race can never validate a probability, but sixteen begin to.
+
+**2. All models are wrong.** Box's dictum is the operating assumption, not a disclaimer. The fundamentals are a one-year compression of decades of regional identity; the swing is a single scalar standing in for millions of individual reconsiderations; the clusters are a crude map of how errors travel. The model is a **deliberate simplification chosen to be useful**, and its usefulness is bounded by the worst of its assumptions (see the ledger). The goal is not a true model — there isn't one — but a model whose *errors are honest*: symmetric where we are ignorant, fat-tailed where surprises live, and explicitly bounded by a scenario sweep where the bias could be one-sided.
+
+**3. Calibration is the only virtue that survives contact with reality.** A confident wrong forecast and a hedged wrong forecast are not equally bad: the first lies about how much it knew. So this model would rather say *12 seats, 90% range 8–15* than *13 seats, certainly* — the wider, less impressive interval is the more honest one. Heavy tails, correlated errors, and the −3pt scenario all exist to **resist the temptation of false precision**. Being 후회 없이 정확해 보이는 것보다, 틀릴 수 있는 범위를 정직하게 말하는 편이 낫다.
+
+**4. The observer changes the observed (reflexivity).** Publishing a forecast can move turnout, donations, and morale — Soros's reflexivity and Goodhart's law both bite. Korea's 공직선거법 제108조 blackout is a legal recognition of exactly this: a forecast is not a neutral mirror but an **intervention**. That is the ethical reason this repo stays private until polls close, not merely a compliance checkbox. A model that could influence the thing it measures has a duty of restraint.
+
+**5. The silicon-sampling failure is an epistemological parable.** The LLM electorate didn't just underperform — it failed *informatively*. Asked to imagine a 2026 voter, the models returned a **2023-era training prior** dressed as a prediction: they reproduced what voters *were*, not what polls now say they *are*. The lesson generalizes beyond elections: an LLM's fluency about the world is **memory, not measurement**. It interpolates the distribution it was trained on; it does not observe the present. Keeping that negative result in the tree is itself an epistemic commitment — **we publish what disconfirms us**, because a research program that only keeps its wins is indistinguishable from one that learns nothing.
+
+**6. Determinism as honesty.** The fixed seed is a small philosophical stance: a forecaster who can re-roll the dice can always find a run that flatters them. By making the pipeline a **pure function of (data, seed)**, there is exactly one forecast to defend, chosen before the outcome. Reproducibility here is not convenience — it is the removal of a degree of freedom that could be abused.
+
+**7. Falsifiability is the point.** Following Popper, a claim that cannot fail tells you nothing. The pre-committed `score.mjs`, the ±3% target, and the sealed numbers exist so that on 2026-06-03 this model can be **plainly wrong**, in public, by a measurable amount. A forecast you cannot lose is not a forecast — it is astrology with confidence intervals.
+
+> **The stance in one line:** the model's job is not to be right about 2026 — no one can guarantee that — but to be *honestly calibrated* about how uncertain 2026 is, and to make that uncertainty cheap to check. 정직이 해자다 (honesty is the moat).
+
 ## Glossary
 
 - **양자(two-way)** — 민주 vs 국힘 share excluding others (`D/(D+P)`); 50% = tie.
@@ -285,6 +330,7 @@ This model is deliberately conventional — it implements well-established forec
 ```bash
 node national.mjs       # forecast + analytics -> forecast-national.json, forecast-meta.json
 node dist.mjs           # seat-distribution histogram + scenarios + vote bar
+node viz.mjs            # per-region win-probability + 90% interval chart
 node backtest-2022.mjs  # calibration: 2022 phone polls vs actual
 node score.mjs          # after 06-03: grade vs data/results-2026-actual.json
 vhs docs/*.tape         # regenerate the GIFs
@@ -296,6 +342,7 @@ vhs docs/*.tape         # regenerate the GIFs
 - **National model:** `national.mjs` · `dist.mjs` · `data/national-2026.json` (16 regions, polls[]+method, clusters) · `data/results-2022.json` (fundamentals) · `data/voters-2026.json` · `forecast-national.json` / `forecast-meta.json` (output)
 - **Calibration / scoring:** `backtest-2022.mjs` · `data/polls-2022-final.json` · `score.mjs` · `data/results-2026-actual.json` (fill after 06-03)
 - **LLM experiment:** `forecast.mjs` · `personas.mjs` · `calibration.json` · `data/seoul-demographics.json` · `data/polls-2026.json`
+- **Visualization:** `viz.mjs` → `docs/probs.gif` (per-region probability + interval chart)
 - **Misc:** `seal.mjs` (unused) · `docs/*.tape` + `docs/*.gif` · `prediction*.json` git-ignored
 
 ## Honest limitations
