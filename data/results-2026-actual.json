@@ -1,0 +1,8 @@
+{
+  "_note": "FILL after polls close (2026-06-03 18:00). Each region: actual two-way {D, P} vote %. score.mjs then grades the forecast.",
+  "regions": {
+    "서울": null, "부산": null, "대구": null, "인천": null, "대전": null, "세종": null,
+    "경기": null, "강원": null, "충북": null, "충남": null, "전북": null, "전남광주": null,
+    "경북": null, "경남": null, "울산": null, "제주": null
+  }
+}

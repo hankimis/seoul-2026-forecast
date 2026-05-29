@@ -1,0 +1,130 @@
+[
+  {
+    "region": "전북",
+    "D": "이원택",
+    "P": "국힘(미미)",
+    "predicted_twoway_D": 87.85,
+    "dwin": 0.98,
+    "winner": "민주"
+  },
+  {
+    "region": "전남광주",
+    "D": "민형배",
+    "P": "이정현",
+    "predicted_twoway_D": 89.82,
+    "dwin": 0.98,
+    "winner": "민주"
+  },
+  {
+    "region": "제주",
+    "D": "위성곤",
+    "P": "문성유",
+    "predicted_twoway_D": 69.26,
+    "dwin": 0.98,
+    "winner": "민주"
+  },
+  {
+    "region": "경기",
+    "D": "추미애",
+    "P": "양향자",
+    "predicted_twoway_D": 60.4,
+    "dwin": 0.94,
+    "winner": "민주"
+  },
+  {
+    "region": "대전",
+    "D": "허태정",
+    "P": "이장우",
+    "predicted_twoway_D": 55.82,
+    "dwin": 0.885,
+    "winner": "민주"
+  },
+  {
+    "region": "인천",
+    "D": "박찬대",
+    "P": "유정복",
+    "predicted_twoway_D": 55.72,
+    "dwin": 0.885,
+    "winner": "민주"
+  },
+  {
+    "region": "강원",
+    "D": "민주 후보",
+    "P": "김진태",
+    "predicted_twoway_D": 55.18,
+    "dwin": 0.86,
+    "winner": "민주"
+  },
+  {
+    "region": "세종",
+    "D": "우상호",
+    "P": "김진태",
+    "predicted_twoway_D": 54.95,
+    "dwin": 0.846,
+    "winner": "민주"
+  },
+  {
+    "region": "충남",
+    "D": "박수현",
+    "P": "김태흠",
+    "predicted_twoway_D": 56.81,
+    "dwin": 0.799,
+    "winner": "민주"
+  },
+  {
+    "region": "서울",
+    "D": "정원오",
+    "P": "오세훈",
+    "predicted_twoway_D": 52.05,
+    "dwin": 0.627,
+    "winner": "민주"
+  },
+  {
+    "region": "충북",
+    "D": "신용한",
+    "P": "김영환",
+    "predicted_twoway_D": 51.43,
+    "dwin": 0.616,
+    "winner": "민주"
+  },
+  {
+    "region": "경남",
+    "D": "김경수",
+    "P": "박완수",
+    "predicted_twoway_D": 51.12,
+    "dwin": 0.562,
+    "winner": "민주"
+  },
+  {
+    "region": "부산",
+    "D": "전재수",
+    "P": "박형준",
+    "predicted_twoway_D": 50.75,
+    "dwin": 0.553,
+    "winner": "민주"
+  },
+  {
+    "region": "울산",
+    "D": "김상욱",
+    "P": "김두겸",
+    "predicted_twoway_D": 48.63,
+    "dwin": 0.389,
+    "winner": "국힘"
+  },
+  {
+    "region": "대구",
+    "D": "김부겸",
+    "P": "추경호",
+    "predicted_twoway_D": 45.51,
+    "dwin": 0.27,
+    "winner": "국힘"
+  },
+  {
+    "region": "경북",
+    "D": "오중기",
+    "P": "국힘 후보",
+    "predicted_twoway_D": 30.31,
+    "dwin": 0.02,
+    "winner": "국힘"
+  }
+]

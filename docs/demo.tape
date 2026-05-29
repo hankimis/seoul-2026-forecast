@@ -1,7 +1,7 @@
 Output docs/national.gif
 Set Shell "bash"
-Set FontSize 15
-Set Width 1320
+Set FontSize 14
+Set Width 1360
 Set Height 900
 Set Theme "Catppuccin Mocha"
 Set Padding 16

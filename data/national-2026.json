@@ -1,23 +1,26 @@
 {
-  "_note": "2026-06-03 9th local election, 17 metropolitan mayor/governor races. 'poll' = a representative pre-blackout May poll (D vs PPP %); regions without a clean two-way number are classified by tier from known partisanship + the 2026 ruling-party (민주당) wave. Names left as party label where unconfirmed. Verify all against NESDC/선관위 before any use. D = 더불어민주당(여당), P = 국민의힘.",
+  "_note": "2026-06-03 9th local election metropolitan races. v5. NOTE: 광주+전남 merged into 전남광주통합특별시 → ONE race (민형배 vs 이정현), so 16 광역단체장 (verify with 선관위). Each region: polls[] with method (phone=전화면접 / ars=자동응답 / mix). Method matters hugely: phone tends to show 여당(D) bigger leads, ARS shows tighter (샤이보수). Names + numbers approximate; verify vs NESDC. D=더불어민주당(여당), P=국민의힘.",
+  "config": {
+    "method_twoway_adj": { "phone": -3, "ars": 3, "mix": 0, "unknown": 0 },
+    "clusters": { "수도권": ["서울","인천","경기"], "충청": ["대전","세종","충북","충남"], "영남": ["부산","울산","경남"], "대경": ["대구","경북"], "호남": ["전남광주","전북"], "강원": ["강원"], "제주": ["제주"] }
+  },
   "regions": [
-    { "region": "서울", "D": "정원오", "P": "오세훈", "poll": { "D": 48.8, "P": 41.4 }, "src": "리얼미터 5/25" },
-    { "region": "부산", "D": "전재수", "P": "박형준", "poll": { "D": 46, "P": 37 }, "src": "JTBC 5/27" },
-    { "region": "대구", "D": "민주 후보", "P": "국힘 후보", "poll": { "D": 41, "P": 40 }, "src": "MBC 5/27" },
-    { "region": "인천", "D": "박찬대", "P": "유정복", "poll": { "D": 49, "P": 33 }, "src": "한국갤럽" },
-    { "region": "광주", "D": "민주 후보", "P": "국힘 후보", "tier": "safe_D" },
-    { "region": "대전", "D": "허태정", "P": "이장우", "poll": { "D": 51.4, "P": 37 }, "src": "대전MBC" },
-    { "region": "세종", "D": "우상호", "P": "김진태", "poll": { "D": 51.2, "P": 37.3 }, "src": "5월" },
-    { "region": "경기", "D": "추미애", "P": "양향자", "poll": { "D": 50.8, "P": 31.5 }, "src": "5월 평균" },
-    { "region": "강원", "D": "민주 후보", "P": "국힘 후보", "poll": { "D": 45.8, "P": 35.8 }, "src": "강원일보 5/5" },
-    { "region": "충북", "D": "신용한", "P": "김영환", "poll": { "D": 45.4, "P": 40.8 }, "src": "5/21" },
-    { "region": "충남", "D": "박수현", "P": "김태흠", "poll": { "D": 43.5, "P": 43.9 }, "src": "5/19" },
-    { "region": "전북", "D": "이원택", "P": "국힘(미미)", "tier": "safe_D", "note": "실제 경쟁은 이원택 vs 김관영(무소속); 국힘 5.9% → 비국힘 확실" },
-    { "region": "전남", "D": "민주 후보", "P": "국힘 후보", "tier": "safe_D" },
-    { "region": "경북", "D": "오중기", "P": "국힘 후보", "tier": "safe_P", "note": "유일하게 초반부터 국힘 우세" },
-    { "region": "경남", "D": "김경수", "P": "박완수", "poll": { "D": 45, "P": 38 }, "src": "5월" },
-    { "region": "울산", "D": "김상욱", "P": "김두겸", "poll": { "D": 37, "P": 34 }, "src": "3자대결 5/27", "note": "진보 김종훈 15~22% 분열/단일화 변수" },
-    { "region": "제주", "D": "위성곤", "P": "문성유", "poll": { "D": 63, "P": 20 }, "src": "5월" }
+    { "region": "서울", "D": "정원오", "P": "오세훈", "cluster": "수도권", "polls": [ {"m":"ars","D":48.8,"P":41.4}, {"m":"phone","D":46,"P":35}, {"m":"phone","D":41,"P":37} ] },
+    { "region": "부산", "D": "전재수", "P": "박형준", "cluster": "영남", "polls": [ {"m":"phone","D":48,"P":34}, {"m":"phone","D":46,"P":37} ], "note": "'부산의 법칙' 샤이보수 변수" },
+    { "region": "대구", "D": "김부겸", "P": "추경호", "cluster": "대경", "polls": [ {"m":"phone","D":44,"P":35}, {"m":"ars","D":40,"P":41} ], "note": "전총리 김부겸 → 경합화; 방식 의존 큼" },
+    { "region": "인천", "D": "박찬대", "P": "유정복", "cluster": "수도권", "polls": [ {"m":"phone","D":49,"P":33} ] },
+    { "region": "대전", "D": "허태정", "P": "이장우", "cluster": "충청", "polls": [ {"m":"phone","D":51.4,"P":37} ] },
+    { "region": "세종", "D": "우상호", "P": "김진태", "cluster": "충청", "polls": [ {"m":"phone","D":51.2,"P":37.3} ] },
+    { "region": "경기", "D": "추미애", "P": "양향자", "cluster": "수도권", "polls": [ {"m":"phone","D":50.8,"P":31.5}, {"m":"phone","D":54,"P":27} ] },
+    { "region": "강원", "D": "민주 후보", "P": "김진태", "cluster": "강원", "polls": [ {"m":"mix","D":45.8,"P":35.8} ], "note": "강원 김진태는 세종과 동명 별인 가능성-검증" },
+    { "region": "충북", "D": "신용한", "P": "김영환", "cluster": "충청", "polls": [ {"m":"mix","D":45.4,"P":40.8} ] },
+    { "region": "충남", "D": "박수현", "P": "김태흠", "cluster": "충청", "polls": [ {"m":"phone","D":44,"P":23}, {"m":"ars","D":43.5,"P":43.9} ], "note": "방식 격차 극심(전화 +21 vs ARS 접전)" },
+    { "region": "전북", "D": "이원택", "P": "국힘(미미)", "cluster": "호남", "tier": "safe_D", "multiparty": "민주 vs 무소속 김관영; 국힘 미미", "note": "비국힘 확실" },
+    { "region": "전남광주", "D": "민형배", "P": "이정현", "cluster": "호남", "tier": "safe_D", "note": "광주+전남 통합특별시(1석)" },
+    { "region": "경북", "D": "오중기", "P": "국힘 후보", "cluster": "대경", "tier": "safe_P" },
+    { "region": "경남", "D": "김경수", "P": "박완수", "cluster": "영남", "polls": [ {"m":"phone","D":44,"P":34}, {"m":"ars","D":43.5,"P":43.2} ], "note": "방식 격차 큼(전화 +10 vs ARS +0.3)" },
+    { "region": "울산", "D": "김상욱", "P": "김두겸", "cluster": "영남", "polls": [ {"m":"phone","D":37,"P":34} ], "multiparty": "진보 김종훈 15~22% 분열/단일화 변수" },
+    { "region": "제주", "D": "위성곤", "P": "문성유", "cluster": "제주", "polls": [ {"m":"phone","D":63,"P":20} ] }
   ],
-  "tier_dwin": { "safe_D": 0.97, "lean_D": 0.72, "tossup_D": 0.56, "tossup_P": 0.42, "lean_P": 0.28, "safe_P": 0.04 }
+  "tier_dwin": { "safe_D": 0.97, "safe_P": 0.03 }
 }
