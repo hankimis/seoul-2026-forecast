@@ -88,3 +88,12 @@ console.log(`${C.b}민감도${C.X}(민주 우세지역 수): 기준 ${base0} · 
 console.log(`${C.D}보정: 방식 phone0/ars+${ADJ.ars}(2022 백테스트=전화 무편향) · σ_loc ${SIG_LOC}(백테스트 2.6) · swing ${SWING}.${C.X}`);
 
 writeFileSync(base("forecast-national.json"), JSON.stringify(rows.map(r=>({region:r.region,D:r.D,P:r.P,predicted_twoway_D:+(+r.finalD).toFixed(2),ci90:[+r.lo.toFixed(1),+r.hi.toFixed(1)],votes_man:{D:r.dVotes==null?null:+r.dVotes.toFixed(0),P:r.pVotes==null?null:+r.pVotes.toFixed(0)},dwin:+r.dwin.toFixed(3),winner:win(r)})),null,2));
+
+// meta dump (seat distribution + scenarios) for dist.mjs
+const seatHist = Array(N+1).fill(0); for (const s of seats) seatHist[s]++;
+writeFileSync(base("forecast-meta.json"), JSON.stringify({
+  total: N, median: seats[SIM/2|0], p90: [seats[SIM*.05|0], seats[SIM*.95|0]],
+  seat_pct: seatHist.map(c=>+(100*c/SIM).toFixed(1)),
+  scenarios: { ge12:+p(ge(12)), ge10:+p(ge(10)), kop_ge5:+p(SIM-ge(12)), sweep5:+p(sweep) },
+  votes_man: { D:+totD.toFixed(0), P:+totP.toFixed(0) },
+}, null, 2));
