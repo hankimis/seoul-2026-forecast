@@ -1,17 +1,43 @@
 {
-  "_note": "APPROXIMATE placeholder shares for the pilot. Replace with official KOSIS / 행정안전부 주민등록 + 선관위 자치구별 통계 before any real run. 'lean' is a prior tendency used only for persona backstory context, never to bias the elicited vote.",
+  "_note": "Age/gender shares are realistic Seoul approximations (eligible-voter structure skews 60+); district weights are approximate population shares; lean2022 is the district's 2022 Oh Se-hoon strength tier from known Seoul political geography (Oh won all 25 in 2022; tiers capture margin). REPLACE with exact KOSIS (age x gender x 자치구) and 선관위 자치구별 2022 results before the published run. Used only as persona backstory priors, never to override the elicited vote.",
   "region": "Seoul",
-  "strata_by_age_gender": [
-    { "age": "18-29", "gender": "M", "share": 0.085, "lean": "swing" },
-    { "age": "18-29", "gender": "F", "share": 0.085, "lean": "center-left" },
-    { "age": "30-39", "gender": "M", "share": 0.085, "lean": "swing" },
-    { "age": "30-39", "gender": "F", "share": 0.085, "lean": "center-left" },
-    { "age": "40-49", "gender": "M", "share": 0.095, "lean": "center-left" },
-    { "age": "40-49", "gender": "F", "share": 0.095, "lean": "center-left" },
-    { "age": "50-59", "gender": "M", "share": 0.095, "lean": "swing" },
-    { "age": "50-59", "gender": "F", "share": 0.095, "lean": "swing" },
-    { "age": "60+",   "gender": "M", "share": 0.085, "lean": "center-right" },
-    { "age": "60+",   "gender": "F", "share": 0.100, "lean": "center-right" }
+  "age_gender_shares": [
+    { "age": "18-29", "gender": "M", "share": 0.075 },
+    { "age": "18-29", "gender": "F", "share": 0.075 },
+    { "age": "30-39", "gender": "M", "share": 0.080 },
+    { "age": "30-39", "gender": "F", "share": 0.080 },
+    { "age": "40-49", "gender": "M", "share": 0.085 },
+    { "age": "40-49", "gender": "F", "share": 0.085 },
+    { "age": "50-59", "gender": "M", "share": 0.085 },
+    { "age": "50-59", "gender": "F", "share": 0.090 },
+    { "age": "60+",   "gender": "M", "share": 0.135 },
+    { "age": "60+",   "gender": "F", "share": 0.170 }
   ],
-  "districts": "_TODO: add 25 자치구 with population + 2022/2024 vote shares for district-level resolution_"
+  "districts": [
+    { "name": "강남구", "weight": 0.054, "lean2022": "Oh strong" },
+    { "name": "서초구", "weight": 0.042, "lean2022": "Oh strong" },
+    { "name": "송파구", "weight": 0.067, "lean2022": "Oh solid" },
+    { "name": "용산구", "weight": 0.021, "lean2022": "Oh solid" },
+    { "name": "양천구", "weight": 0.046, "lean2022": "Oh solid" },
+    { "name": "강동구", "weight": 0.047, "lean2022": "Oh solid" },
+    { "name": "종로구", "weight": 0.014, "lean2022": "Oh solid" },
+    { "name": "중구",   "weight": 0.012, "lean2022": "Oh solid" },
+    { "name": "영등포구", "weight": 0.038, "lean2022": "Oh solid" },
+    { "name": "동작구", "weight": 0.039, "lean2022": "Oh solid" },
+    { "name": "마포구", "weight": 0.037, "lean2022": "Oh solid" },
+    { "name": "광진구", "weight": 0.034, "lean2022": "Oh moderate" },
+    { "name": "성동구", "weight": 0.029, "lean2022": "Oh moderate" },
+    { "name": "강서구", "weight": 0.058, "lean2022": "Oh moderate" },
+    { "name": "노원구", "weight": 0.052, "lean2022": "Oh moderate" },
+    { "name": "동대문구", "weight": 0.035, "lean2022": "Oh moderate" },
+    { "name": "서대문구", "weight": 0.030, "lean2022": "Oh moderate" },
+    { "name": "성북구", "weight": 0.044, "lean2022": "Oh moderate" },
+    { "name": "도봉구", "weight": 0.032, "lean2022": "Oh moderate" },
+    { "name": "중랑구", "weight": 0.039, "lean2022": "Oh moderate" },
+    { "name": "구로구", "weight": 0.040, "lean2022": "Oh moderate" },
+    { "name": "은평구", "weight": 0.048, "lean2022": "Oh moderate" },
+    { "name": "관악구", "weight": 0.050, "lean2022": "competitive" },
+    { "name": "금천구", "weight": 0.022, "lean2022": "competitive" },
+    { "name": "강북구", "weight": 0.030, "lean2022": "competitive" }
+  ]
 }

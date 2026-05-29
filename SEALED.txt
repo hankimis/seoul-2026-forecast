@@ -1,0 +1,5 @@
+SEALED PREDICTION COMMITMENT
+file: prediction.json
+sha256: 560060cea99dd2f34734e6df735df433a168648cba45f74640abb6a3d1b1b8b4
+sealed_at_utc: 2026-05-29T13:22:30.569Z
+note: contents withheld until polls close (KR election-law blackout). Verify after reveal.
