@@ -1,8 +1,8 @@
 # 2026 Korean Local Elections — Forecast (private research)
 
-A poll + fundamentals forecast of every metropolitan mayor/governor race in the **2026-06-03** Korean local election — predicting **vote share, vote counts, win probability, 90% intervals, and scenario odds**, empirically calibrated against a 2022 backtest and self-scored after the result. Built over six versions. It also carries an LLM-persona experiment that we keep around precisely because it *failed* — an honest negative result. Internal research, kept private.
+A poll + fundamentals forecast of every metropolitan mayor/governor race in the **2026-06-03** Korean local election — predicting **vote share, vote counts, win probability, 90% intervals, and scenario odds**, empirically calibrated against a 2022 backtest and self-scored after the result. Built over eight versions. It also carries an LLM-persona experiment that we keep around precisely because it *failed* — an honest negative result. Internal research, kept private.
 
-![national forecast v6](docs/national.gif)
+![national forecast v8](docs/national.gif)
 
 > ⚠️ **Private / election law.** 공직선거법 제108조 bans publishing election forecasts during the blackout (2026-05-28 → 06-03 18:00). This repo is private; nothing is published until polls close.
 > **Structural note:** 광주 + 전남 merged into **전남광주통합특별시** → one race (민형배 vs 이정현), so **16 광역단체장** (verify vs 선관위).
@@ -10,13 +10,13 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 ---
 
 ## Contents
-1. [TL;DR](#tldr--v7-forecast) · 2. [Why two experiments](#the-two-experiments) · 3. [Version history](#version-history) · 4. [Full forecast (16)](#v7-forecast--all-16) · 5. [Seat distribution](#seat-distribution--scenarios) · 6. [Calibration (2022 backtest)](#empirical-calibration--2022-backtest) · 7. [Scoring](#predicted-share--post-election-scoring) · 8. [Methodology deep-dive](#methodology-deep-dive) · 9. [The LLM experiment](#the-llm-experiment-in-detail) · 10. [Glossary](#glossary) · 11. [What could go wrong](#what-could-still-go-wrong) · 12. [Roadmap](#roadmap-v7-ideas) · 13. [Limitations](#honest-limitations)
+1. [TL;DR](#tldr--v8-forecast) · 2. [Why two experiments](#the-two-experiments) · 3. [Version history](#version-history) · 4. [Full forecast (16)](#v8-forecast--all-16) · 5. [Seat distribution](#seat-distribution--scenarios) · 6. [Calibration (2022 backtest)](#empirical-calibration--2022-backtest) · 7. [Scoring](#predicted-share--post-election-scoring) · 8. [Methodology deep-dive](#methodology-deep-dive) · 9. [The LLM experiment](#the-llm-experiment-in-detail) · 10. [Glossary](#glossary) · 11. [What could go wrong](#what-could-still-go-wrong) · 12. [Roadmap](#roadmap-v8-ideas) · 13. [Limitations](#honest-limitations)
 
 ---
 
-## TL;DR — v7 forecast
+## TL;DR — v8 forecast
 
-- **민주(여당) median 13 / 16 seats** (90% range 9–15); 국힘 holds **대구·경북**. `P(민주 ≥ 12) = 70%`, `P(민주 과반) = 96%`.
+- **민주(여당) median 12 / 16 seats** (90% range 8–15); 국힘 holds **대구·경북**. `P(민주 ≥ 12) = 64%`, `P(민주 ≥ 10) = 87%`. 단, 친국힘 −3pt 상관오차면 **11석**까지 하락 (한쪽 통째 오류 리스크).
 - **Tipping point: 울산** (50.4%, 민주 53%). Other tossups lean 민주: 부산·경남·충북·서울.
 - **National two-party vote ≈ 총투표 2,309만(투표율 nowcast 52.3%) → 민주 1,219만 (58.8%) vs 국힘 856만 (41.2%).**
 - **Empirically calibrated:** the 2022 final phone polls were ~unbiased (MAE 2.2pt, σ 2.6), so method correction and σ are set from that backtest, not by hand.
@@ -41,33 +41,42 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 | v5 | method (ARS/phone) normalization · house-effect · shrinkage · clustered correlated errors · multiparty · share + counts | ARS vs phone swings a race 10–20pt — the biggest hidden bias |
 | **v6** | **2022 backtest calibration · scenario odds · 90% intervals · sensitivity · upset-risk · decisive-vote margins** | **the 2022 phone polls were ~unbiased (MAE 2.2)** → anchor method/σ on data; ARS understates 민주 |
 | **v7** | **turnout nowcast from early voting (사전투표)** + ensemble hook | final turnout = early ÷ early-share (calibrated 2018·2022) → tightens the total-votes prediction, the ±3% weak link |
+| **v8** | **seeded RNG (재현성) · heavy-tail errors (정규혼합≈Student-t) · σ를 폴 수에 연동 · 체계적 폴편향 시나리오(−4~+4pt) · 다당제 라벨 교정 · 차등투표율 손잡이** | 분산을 넓혀 중앙값 13→12로 **더 정직하게**; 한쪽 통째 오류(상관 편향) 노출 → 중심추정의 D-쏠림은 여전한 한계 |
 
-## v7 forecast — all 16
+## v8 forecast — all 16
 
 **민주% / 국힘%** = 원(raw) 득표율 (전체 표 대비) · **예측D** = 양자 득표율(±90%구간) · **총투표** = 예측 총 투표자수(만) · **득표수** = 만 표 · **확률** = 민주 승리확률. 정렬 = 확률순. (목표 정확도 ±3% — 검증은 6/3 `score.mjs`)
 
-총투표·득표수는 **투표율 nowcast(사전투표→최종 52.3%)** 반영.
+총투표·득표수는 **투표율 nowcast(사전투표→최종 52.3%)** 반영. 확률·구간은 **시드 고정 + 두꺼운 꼬리(heavy-tail)** MC (v8).
 
 | 지역 | 매치업 | 민주% | 국힘% | 예측D(양자) | 90%구간 | 총투표(만) | 민주(만) | 국힘(만) | 확률 | 당선 |
 |---|---|--:|--:|--:|:--:|--:|--:|--:|--:|:--:|
-| 전남광주 | 민형배 vs 이정현 | 80.8 | 9.2 | 89.8% | 82~97 | 155 | 125 | 14 | 98% | 🔵 |
-| 전북 | 이원택 vs 김관영(무) | 79.1 | 10.9 | 87.8% | 80~95 | 81 | 64 | 9 | 98% | 🔵 |
-| 제주 | 위성곤 vs 문성유 | 63.9 | 26.1 | 71.0% | 64~78 | 30 | 19 | 8 | 98% | 🔵 |
-| 경기 | 추미애 vs 양향자 | 56.4 | 33.6 | 62.7% | 52~73 | 582 | 328 | 196 | 98% | 🔵 |
-| 대전 | 허태정 vs 이장우 | 51.8 | 38.2 | 57.6% | 50~65 | 63 | 33 | 24 | 95% | 🔵 |
-| 인천 | 박찬대 vs 유정복 | 51.7 | 38.3 | 57.5% | 50~65 | 126 | 65 | 48 | 95% | 🔵 |
-| 세종 | 우상호 vs 김진태 | 51.0 | 39.0 | 56.7% | 49~64 | 17 | 9 | 7 | 93% | 🔵 |
-| 강원 | 민주 vs 김진태 | 50.7 | 39.3 | 56.3% | 49~64 | 72 | 36 | 28 | 92% | 🔵 |
-| 충남 | 박수현 vs 김태흠 | 52.8 | 37.2 | 58.7% | 46~71 | 93 | 49 | 34 | 87% | 🔵 |
-| 서울 | 정원오 vs 오세훈 | 48.6 | 41.4 | 54.1% | 44~64 | 444 | 216 | 183 | 75% | 🔵 |
-| 충북 | 신용한 vs 김영환 | 47.3 | 42.7 | 52.6% | 45~60 | 70 | 33 | 30 | 72% | 🔵 |
-| 부산 | 전재수 vs 박형준 | 47.7 | 42.3 | 53.0% | 44~62 | 152 | 72 | 64 | 70% | 🔵 |
-| 경남 | 김경수 vs 박완수 | 47.7 | 42.3 | 53.0% | 42~64 | 147 | 70 | 62 | 67% | 🔵 |
-| 울산 | 김상욱 vs 김두겸 | 45.3 | 44.7 | 50.4% | 43~58 | 51 | 23 | 23 | 54% | 🔵 |
-| 대구 | 김부겸 vs 추경호 | 42.6 | 47.4 | 47.4% | 36~59 | 104 | 44 | 49 | 35% | 🔴 |
-| 경북 | 오중기 vs 국힘 | 27.3 | 62.7 | 30.3% | 23~38 | 122 | 33 | 77 | 2% | 🔴 |
+| 전남광주 | 민형배 vs 이정현 | 80.8 | 9.2 | 89.8% | 81~99 | 155 | 125 | 14 | 98% | 🔵 |
+| 전북 | 이원택 vs 김관영(무) | 79.1 | 10.9 | 87.9% | 79~97 | 81 | 64 | 9 | 98% | 🔵 |
+| 제주 | 위성곤 vs 문성유 | 63.9 | 26.1 | 71.0% | 63~79 | 30 | 19 | 8 | 98% | 🔵 |
+| 경기 | 추미애 vs 양향자 | 56.4 | 33.6 | 62.7% | 52~73 | 582 | 328 | 196 | 95% | 🔵 |
+| 대전 | 허태정 vs 이장우 | 51.8 | 38.2 | 57.6% | 49~66 | 63 | 33 | 24 | 90% | 🔵 |
+| 인천 | 박찬대 vs 유정복 | 51.7 | 38.3 | 57.5% | 49~66 | 126 | 65 | 48 | 90% | 🔵 |
+| 세종 | 우상호 vs 김진태 | 51.0 | 39.0 | 56.7% | 49~65 | 17 | 9 | 7 | 87% | 🔵 |
+| 강원 | 민주 vs 김진태 | 50.7 | 39.3 | 56.3% | 48~65 | 72 | 36 | 28 | 86% | 🔵 |
+| 충남 | 박수현 vs 김태흠 | 52.8 | 37.2 | 58.7% | 46~71 | 93 | 49 | 34 | 84% | 🔵 |
+| 서울 | 정원오 vs 오세훈 | 48.6 | 41.4 | 54.1% | 44~64 | 444 | 216 | 183 | 73% | 🔵 |
+| 부산 | 전재수 vs 박형준 | 47.7 | 42.3 | 53.0% | 44~62 | 152 | 72 | 64 | 68% | 🔵 |
+| 충북 | 신용한 vs 김영환 | 47.3 | 42.7 | 52.6% | 44~61 | 70 | 33 | 30 | 68% | 🔵 |
+| 경남 | 김경수 vs 박완수 | 47.7 | 42.3 | 53.0% | 42~64 | 147 | 70 | 62 | 65% | 🔵 |
+| 울산 | 김상욱 vs 김두겸 | 45.3 | 44.7 | 50.4% | 42~59 | 51 | 23 | 23 | 53% | 🔵 |
+| 대구 | 김부겸 vs 추경호 | 42.6 | 47.4 | 47.4% | 36~59 | 104 | 44 | 49 | 37% | 🔴 |
+| 경북 | 오중기 vs 국힘 | 27.3 | 62.7 | 30.3% | 21~40 | 122 | 33 | 77 | 2% | 🔴 |
 
-**전국: 총투표 ≈ 2,309만 (최종 투표율 nowcast 52.3%) → 민주 ≈ 1,219만 (58.8%) vs 국힘 ≈ 856만 (41.2%) (양당 기준).** 민주%+국힘% < 100인 차이는 제3당·무소속(약 10%) 몫.
+**전국: 총투표 ≈ 2,309만 (투표율 nowcast 52.3%) → 민주 ≈ 1,221만 (58.8%) vs 국힘 ≈ 856만 (41.2%) (양당 기준).** 민주%+국힘% < 100인 차이는 제3당·무소속(약 10%) 몫.
+
+### 체계적 폴편향 시나리오 (전국 양자D 일괄 ±pt → 민주 의석)
+
+| 편향 | −4pt | −3pt | −2pt | 0 | +2pt | +4pt |
+|---|--:|--:|--:|--:|--:|--:|
+| 민주 의석 | 10 | 11 | 13 | 14 | 14 | 15 |
+
+⚠️ 모든 여론조사가 같은 방향으로 틀리는 **상관 오차(correlated error)** 가 핵심 리스크. **친국힘 −3~−4pt 미스**면 부산·경남·서울·충북이 동반 이탈해 민주 **10~11석**까지 떨어진다. MC의 분산(σ)은 이 가능성을 담지만, 모델 손잡이들이 D쪽으로 쏠려 있어 **중심추정 자체가 D-과대일 수 있다** (정직한 한계). 다당제 주의: **전북** = 민주 vs 무소속(비국힘이나 민주후보 패배 가능), **울산** = 3자(진보 분열 변수).
 
 ### 클러스터 요약 (상관 군집)
 
@@ -86,15 +95,15 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 
 | | |
 |---|---|
-| 의석 중앙값 | **13 / 16** (90% 9~15) |
-| P(민주 ≥ 12) | 70% |
-| P(민주 ≥ 10) | 92% |
-| P(민주 과반, ≥9) | 96% |
-| P(국힘 ≥ 5) | 30% |
-| P(경합 5곳 싹쓸이) | 25% |
+| 의석 중앙값 | **12 / 16** (90% 8~15) |
+| P(민주 ≥ 12) | 64% |
+| P(민주 ≥ 10) | 87% |
+| P(국힘 ≥ 5) | 36% |
+| P(경합 5곳 싹쓸이) | 21% |
 | 결정표 (경합 뒤집는 표) | 울산 0.2만 · 대구 2.5만 |
-| 업셋 리스크 (비경합 약한순) | 경남 67% · 부산 71% · 충북 72% |
+| 업셋 리스크 (비경합 약한순) | 경남 65% · 충북 68% · 부산 68% |
 | 민감도 (민주 우세 수) | 기준 14 · 방식보정無 14 · 스윙± 13~14 |
+| 체계적 편향 −3pt 시 | 11석 (한쪽 통째 오류 리스크) |
 
 ## Empirical calibration — 2022 backtest
 
@@ -124,7 +133,9 @@ Honest expectation on ±3%: the 2022 backtest had a **2.2pt share MAE** — so *
 2. **Method normalization.** Each poll is tagged phone / ARS / mix. ARS systematically shows tighter races (샤이보수 / high-engagement respondents); phone shows bigger 여당 leads and — per the 2022 backtest — was the *accurate* one. So polls are normalized toward the phone basis (`ARS +5`, `mix +2`, `phone 0` two-way 민주).
 3. **Multi-poll aggregation.** A region's polls are averaged after normalization; their raw spread is recorded as a method/house-disagreement signal.
 4. **Hierarchical shrinkage.** Poll weight scales with poll count: `0.75` (≥2 polls), `0.58` (1 poll), `0` (none → fundamentals only). Strongholds with no polls ride fundamentals.
-5. **Clustered correlated Monte Carlo (50k).** Each draw adds a shared **national** error, a per-**cluster** error (수도권/충청/영남/대경/호남/강원/제주), and a **local** error: `σ² = σ_nat² + σ_clu² + σ_loc²` with `σ_nat=σ_clu=2.5`, `σ_loc=2.8` (+ inflation where polls disagree, e.g. 충남 ±16). Clustering means a regional miss moves a whole bloc together — giving realistic seat-distribution tails instead of falsely tight ones.
+5. **Clustered correlated Monte Carlo (50k).** Each draw adds a shared **national** error, a per-**cluster** error (수도권/충청/영남/대경/호남/강원/제주), and a **local** error: `σ² = σ_nat² + σ_clu² + σ_loc²` with `σ_nat=σ_clu=2.5`, `σ_loc=2.8` (+ inflation where polls disagree, e.g. 충남 ±16, **+폴 수 적을수록 가산**). Clustering means a regional miss moves a whole bloc together — giving realistic seat-distribution tails instead of falsely tight ones.
+   - **v8 — 재현성·두꺼운 꼬리.** RNG는 시드 고정(`mulberry32`, seed `20260603`)이라 같은 입력 → 같은 출력. 오차는 정규혼합(12% 추출이 2.4×σ)으로 **Student-t에 가까운 두꺼운 꼬리**를 줘, 여론조사가 크게 빗나가는 드문 사건(상관 미스)을 과소평가하지 않는다.
+   - **체계적 폴편향 시나리오.** 전국 양자D를 −4~+4pt 일괄 이동시켜 의석을 다시 센다(위 표). σ는 무작위 분산만 담으므로, **모든 조사가 같은 방향으로 틀리는 상관 편향**은 이 시나리오로 따로 노출한다. 친국힘 −3pt면 14→11석.
 6. **Vote counts.** `예측득표율 × (선거인수 × 투표율 0.52 × 양당 0.90)`.
 7. **Multiparty flags.** 울산 (진보 김종훈 splits the anti-PPP vote), 전북 (민주 vs 무소속 김관영, not 국힘).
 
@@ -154,7 +165,7 @@ Honest expectation on ±3%: the 2022 backtest had a **2.2pt share MAE** — so *
 - **전북** 무소속 김관영 beating the 민주 candidate (still non-국힘, so the D-vs-P seat call holds).
 - **Correlated national miss** — the single biggest tail risk; that's why the cluster + national error terms exist.
 
-## Roadmap (v7 ideas)
+## Roadmap (v8 ideas)
 
 - **Ensemble with prediction markets / 오마이뉴스×STI** (markets beat models in 2024; hook is stubbed, needs their numbers).
 - **Pollster-level house effects** (not just method) + LV/RV adjustment.
@@ -186,6 +197,8 @@ vhs docs/*.tape         # regenerate the GIFs
 - **Phone-anchor risk** (above) — the D-lean tossups are the fragile calls.
 - **충남** widest uncertainty (±16 method spread). **울산** hinges on 단일화; **전북** is vs 무소속.
 - Fundamentals, swing, σ, eligible-voter/turnout numbers are estimates/approximate — verify vs 선관위/NESDC. Knowledge cutoff Jan 2026; facts via web.
+- **Full-model backtest still pending.** The 2022 calibration (`backtest-2022.mjs`) validates the **poll part** only (n=5, MAE 2.2). The full pipeline (fundamentals ⊕ polls ⊕ clustered MC) has not been validated out-of-sample because clean 2018+2022 region-level fundamentals aren't in hand — **so it is not faked here.** v8 instead bounds exposure with the systematic-bias scenario; a real out-of-sample backtest is a v9 item once the data is loaded.
+- **Center estimate may be D-biased.** Several knobs (ARS→phone pull, swing, turnout) push 민주-ward. The MC σ and the bias scenario capture the spread, but if every nudge is wrong in the same direction the median itself overstates 민주 — the −3pt column (→11석) is the honest downside.
 
 ## Validation
 

@@ -19,8 +19,13 @@ const priorNat = eW.reduce((s,v)=>s+v.eligible_10k*v.turnout,0) / eW.reduce((s,v
 const TURNOUT_SCALE = nowcastNat / priorNat;
 const ADJ = nat.config.method_twoway_adj;
 const SWING = 0.32, SIG_NAT = 2.5, SIG_CLU = 2.5, SIG_LOC = 2.8, SIM = 50000; // σ from 2022 backtest
+const TURNOUT_BETA = 0; // v8: differential-turnout share effect (pt of D per +1% turnout). 0 by default (avoid stacking D-bias); documented knob.
 const logit = (p)=>Math.log(p/(1-p)), invlogit=(x)=>1/(1+Math.exp(-x));
-const z = () => Math.sqrt(-2*Math.log(Math.random()))*Math.cos(2*Math.PI*Math.random());
+// v8: seeded RNG (reproducible) + heavy-tailed errors (normal mixture ≈ Student-t)
+let _seed = 20260603 >>> 0;
+const rand = () => { _seed = _seed + 0x6D2B79F5 | 0; let t = Math.imul(_seed ^ _seed>>>15, 1|_seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; };
+const z = () => Math.sqrt(-2*Math.log(rand()||1e-9))*Math.cos(2*Math.PI*rand());
+const err = (s) => z()*s*(rand()<0.12 ? 2.4 : 1); // 12% of draws use 2.4× σ → fat tails
 const cap = (p)=>Math.max(0.02,Math.min(0.98,p));
 const tw = (D,P)=>100*D/(D+P);
 const C = {B:"\x1b[36m",R:"\x1b[31m",Y:"\x1b[33m",D:"\x1b[2m",b:"\x1b[1m",X:"\x1b[0m"};
@@ -38,8 +43,9 @@ function build(swing=SWING, useMethod=true) {
       const raws=r.polls.map(p=>tw(p.D,p.P)); spread=Math.max(...raws)-Math.min(...raws);
     }
     const wPoll = n>=2?0.75:n===1?0.58:0;
-    const finalD = pollD!=null&&fundD!=null ? wPoll*pollD+(1-wPoll)*fundD : pollD??fundD;
-    const sigLoc = SIG_LOC + Math.min(spread/2,4);
+    let finalD = pollD!=null&&fundD!=null ? wPoll*pollD+(1-wPoll)*fundD : pollD??fundD;
+    finalD += TURNOUT_BETA*((nowcastNat-0.52)*100); // differential turnout (default off)
+    const sigLoc = SIG_LOC + Math.min(spread/2,4) + (n===0?1.6:n===1?0.7:0); // fewer polls → more uncertain
     const vr=vot.regions[r.region], frac=vot.two_party_frac;
     const effTurnout = vr ? vr.turnout*TURNOUT_SCALE : null;  // early-voting nowcast applied
     const total = vr ? vr.eligible_10k*effTurnout : null;     // 총투표(만) = 선거인수×투표율(nowcast)
@@ -55,9 +61,9 @@ const rows = build();
 const clusters=[...new Set(rows.map(r=>r.cluster))];
 const wins=rows.map(()=>0); const seats=[]; let sweep=0;
 for (let i=0;i<SIM;i++){
-  const ns=z()*SIG_NAT, cz=Object.fromEntries(clusters.map(c=>[c,z()*SIG_CLU]));
+  const ns=err(SIG_NAT), cz=Object.fromEntries(clusters.map(c=>[c,err(SIG_CLU)]));
   let s=0, sw=1;
-  rows.forEach((r,k)=>{ const w = r.finalD+ns+cz[r.cluster]+z()*r.sigLoc>50; if(w){wins[k]++;s++;} if(TOSSUP.has(r.region)&&!w) sw=0; });
+  rows.forEach((r,k)=>{ const w = r.finalD+ns+cz[r.cluster]+err(r.sigLoc)>50; if(w){wins[k]++;s++;} if(TOSSUP.has(r.region)&&!w) sw=0; });
   seats.push(s); if(sw) sweep++;
 }
 seats.sort((a,b)=>a-b);
@@ -66,7 +72,7 @@ rows.sort((a,b)=>b.dwin-a.dwin);
 
 const f=(x)=>x==null?"  - ":x.toFixed(1).padStart(5);
 const win=(r)=>r.dwin>=0.5?"민주":"국힘", lab=(r)=>{const p=Math.max(r.dwin,1-r.dwin);return p>=0.85?"안정":p>=0.65?"우세":"경합";}, col=(r)=>r.dwin>=0.5?C.B:C.R;
-console.log(`\n${C.b}2026 광역단체장 ${rows.length} — v7${C.X} ${C.D}(2022 백테스트 보정 · 시나리오/구간/민감도)${C.X}\n`);
+console.log(`\n${C.b}2026 광역단체장 ${rows.length} — v8${C.X} ${C.D}(2022 백테스트 보정 · 시나리오/구간/민감도)${C.X}\n`);
 console.log(`${C.D}지역      매치업                    민주%  국힘%  예측D(양자) 당선 확률 판정${C.X}`);
 console.log("-".repeat(90));
 for (const r of rows) console.log(`${r.region.padEnd(5)} ${(`${r.D} vs ${r.P}`).padEnd(23)} ${C.B}${f(r.rawD)}%${C.X} ${C.R}${f(r.rawP)}%${C.X} ${col(r)}${f(r.finalD)}%[${r.lo.toFixed(0)}~${r.hi.toFixed(0)}]${C.X} ${col(r)}${win(r)} ${String(Math.round(r.dwin*100)).padStart(3)}%${C.X} ${lab(r)==="경합"?C.Y:""}${lab(r)}${C.X}`);
@@ -98,6 +104,10 @@ console.log(`${C.b}업셋 리스크${C.X} ${C.D}(비경합 중 뒤집힐 가능�
 const base0=callCount(rows);
 const noM=callCount(build(SWING,false)), sUp=callCount(build(SWING+0.15)), sDn=callCount(build(SWING-0.15));
 console.log(`${C.b}민감도${C.X}(민주 우세지역 수): 기준 ${base0} · 방식보정無 ${noM} · 스윙+ ${sUp} · 스윙− ${sDn}`);
+// v8: systematic national polling-bias scenarios (uniform shift in 양자 D)
+const seatsAtBias = (b)=> rows.filter(r=>r.finalD+b>50).length;
+console.log(`${C.b}체계적 폴편향 시나리오${C.X} ${C.D}(전국 양자D 일괄 ±pt → 민주 의석)${C.X}: ` + [-4,-3,-2,0,2,4].map(b=>`${b>0?"+":""}${b}pt→${seatsAtBias(b)}석`).join(" · "));
+console.log(`${C.D}⚠ 친국힘 −3~−4pt 미스 시 민주 ${seatsAtBias(-4)}~${seatsAtBias(-3)}석으로 동반 이탈(부산·경남·서울·충북). 다당제 주의: 전북=민주 vs 무소속(비국힘이나 민주후보 패배 가능), 울산=3자(진보 분열).${C.X}`);
 console.log(`${C.D}보정: 방식 phone0/ars+${ADJ.ars}(2022 백테스트=전화 무편향) · σ_loc ${SIG_LOC}(백테스트 2.6) · swing ${SWING}.${C.X}`);
 
 writeFileSync(base("forecast-national.json"), JSON.stringify(rows.map(r=>({region:r.region,D:r.D,P:r.P,predicted_twoway_D:+(+r.finalD).toFixed(2),ci90:[+r.lo.toFixed(1),+r.hi.toFixed(1)],raw_share_pct:{D:r.rawD,P:r.rawP},total_votes_man:r.total==null?null:+r.total.toFixed(0),votes_man:{D:r.dVotes==null?null:+r.dVotes.toFixed(0),P:r.pVotes==null?null:+r.pVotes.toFixed(0)},dwin:+r.dwin.toFixed(3),winner:win(r)})),null,2));
