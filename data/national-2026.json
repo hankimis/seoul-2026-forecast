@@ -1,0 +1,23 @@
+{
+  "_note": "2026-06-03 9th local election, 17 metropolitan mayor/governor races. 'poll' = a representative pre-blackout May poll (D vs PPP %); regions without a clean two-way number are classified by tier from known partisanship + the 2026 ruling-party (민주당) wave. Names left as party label where unconfirmed. Verify all against NESDC/선관위 before any use. D = 더불어민주당(여당), P = 국민의힘.",
+  "regions": [
+    { "region": "서울", "D": "정원오", "P": "오세훈", "poll": { "D": 48.8, "P": 41.4 }, "src": "리얼미터 5/25" },
+    { "region": "부산", "D": "전재수", "P": "박형준", "poll": { "D": 46, "P": 37 }, "src": "JTBC 5/27" },
+    { "region": "대구", "D": "민주 후보", "P": "국힘 후보", "poll": { "D": 41, "P": 40 }, "src": "MBC 5/27" },
+    { "region": "인천", "D": "박찬대", "P": "유정복", "poll": { "D": 49, "P": 33 }, "src": "한국갤럽" },
+    { "region": "광주", "D": "민주 후보", "P": "국힘 후보", "tier": "safe_D" },
+    { "region": "대전", "D": "허태정", "P": "이장우", "poll": { "D": 51.4, "P": 37 }, "src": "대전MBC" },
+    { "region": "울산", "D": "김상욱", "P": "김두겸", "tier": "tossup_P", "note": "3자 구도(진보 김종훈), 단일화 변수" },
+    { "region": "세종", "D": "우상호", "P": "김진태", "poll": { "D": 51.2, "P": 37.3 }, "src": "5월" },
+    { "region": "경기", "D": "추미애", "P": "양향자", "poll": { "D": 50.8, "P": 31.5 }, "src": "5월 평균" },
+    { "region": "강원", "D": "민주 후보", "P": "국힘 후보", "tier": "tossup_P", "note": "전통 보수, 2026 경합" },
+    { "region": "충북", "D": "신용한", "P": "김영환", "poll": { "D": 45.4, "P": 40.8 }, "src": "5/21" },
+    { "region": "충남", "D": "박수현", "P": "김태흠", "poll": { "D": 43.5, "P": 43.9 }, "src": "5/19" },
+    { "region": "전북", "D": "민주 후보", "P": "국힘 후보", "tier": "tossup_D", "note": "김관영 무소속 출마 변수, 경합(여론M)" },
+    { "region": "전남", "D": "민주 후보", "P": "국힘 후보", "tier": "safe_D" },
+    { "region": "경북", "D": "민주 후보", "P": "국힘 후보", "tier": "safe_P", "note": "유일하게 초반부터 국힘 우세" },
+    { "region": "경남", "D": "김경수", "P": "박완수", "poll": { "D": 45, "P": 38 }, "src": "5월" },
+    { "region": "제주", "D": "민주 후보", "P": "국힘 후보", "tier": "lean_D" }
+  ],
+  "tier_dwin": { "safe_D": 0.97, "lean_D": 0.72, "tossup_D": 0.56, "tossup_P": 0.42, "lean_P": 0.28, "safe_P": 0.04 }
+}

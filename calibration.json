@@ -1,0 +1,24 @@
+{
+  "year": "2022",
+  "actualB": 40.95,
+  "models": {
+    "claude-haiku-4.5": {
+      "shareB_pred": 24.33,
+      "errVsActual": 16.62,
+      "rawWeight": 0.0537,
+      "weight": 0.164
+    },
+    "claude-sonnet-4.6": {
+      "shareB_pred": 37.67,
+      "errVsActual": 3.28,
+      "rawWeight": 0.1894,
+      "weight": 0.577
+    },
+    "gpt-4o-mini": {
+      "shareB_pred": 50.69,
+      "errVsActual": 9.74,
+      "rawWeight": 0.0852,
+      "weight": 0.26
+    }
+  }
+}

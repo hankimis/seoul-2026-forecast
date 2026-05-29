@@ -1,0 +1,13 @@
+{
+  "_note": "Public Seoul mayor polls published BEFORE the 2026-05-28 blackout (legal to use). Two-way is computed from these. Sample sizes are approximate where the snippet did not state them; replace with the NESDC-registered exact n/method. Used internally for research; not published.",
+  "election": "2026 Seoul Mayor",
+  "candidates": { "A": "오세훈", "B": "정원오" },
+  "polls": [
+    { "pollster": "한국갤럽(뉴스1)",     "end": "2026-05-10", "n": 800, "오세훈": 38.0, "정원오": 46.0 },
+    { "pollster": "한국리서치(KBS)",      "end": "2026-05-25", "n": 800, "오세훈": 36.0, "정원오": 42.0 },
+    { "pollster": "리얼미터(뉴스핌)",      "end": "2026-05-25", "n": 800, "오세훈": 41.4, "정원오": 48.8 },
+    { "pollster": "리서치앤리서치(동아)", "end": "2026-05-26", "n": 800, "오세훈": 36.4, "정원오": 49.6 },
+    { "pollster": "코리아리서치(MBC)",    "end": "2026-05-27", "n": 800, "오세훈": 37.0, "정원오": 41.0 }
+  ],
+  "as_of": "2026-05-28"
+}
