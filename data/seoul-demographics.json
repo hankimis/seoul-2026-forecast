@@ -1,0 +1,17 @@
+{
+  "_note": "APPROXIMATE placeholder shares for the pilot. Replace with official KOSIS / 행정안전부 주민등록 + 선관위 자치구별 통계 before any real run. 'lean' is a prior tendency used only for persona backstory context, never to bias the elicited vote.",
+  "region": "Seoul",
+  "strata_by_age_gender": [
+    { "age": "18-29", "gender": "M", "share": 0.085, "lean": "swing" },
+    { "age": "18-29", "gender": "F", "share": 0.085, "lean": "center-left" },
+    { "age": "30-39", "gender": "M", "share": 0.085, "lean": "swing" },
+    { "age": "30-39", "gender": "F", "share": 0.085, "lean": "center-left" },
+    { "age": "40-49", "gender": "M", "share": 0.095, "lean": "center-left" },
+    { "age": "40-49", "gender": "F", "share": 0.095, "lean": "center-left" },
+    { "age": "50-59", "gender": "M", "share": 0.095, "lean": "swing" },
+    { "age": "50-59", "gender": "F", "share": 0.095, "lean": "swing" },
+    { "age": "60+",   "gender": "M", "share": 0.085, "lean": "center-right" },
+    { "age": "60+",   "gender": "F", "share": 0.100, "lean": "center-right" }
+  ],
+  "districts": "_TODO: add 25 자치구 with population + 2022/2024 vote shares for district-level resolution_"
+}

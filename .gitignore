@@ -1,0 +1,7 @@
+node_modules/
+# Live forecast must never be committed before the post-blackout reveal:
+prediction.json
+prediction.raw.json
+personas.json
+.env
+.DS_Store

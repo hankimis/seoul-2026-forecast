@@ -1,0 +1,10 @@
+{
+  "_note": "Ground truth for backtest. VERIFY against 선관위 선거통계시스템 (info.nec.go.kr) before relying on it. Numbers below are the widely reported topline; district-level + exact decimals must be pulled from the official source.",
+  "election": "2022 Seoul Mayor (8th local election, 2022-06-01)",
+  "candidates": [
+    { "name": "오세훈", "party": "국민의힘", "share": 59.05 },
+    { "name": "송영길", "party": "더불어민주당", "share": 39.23 }
+  ],
+  "turnout": 53.2,
+  "leakage_warning": "LLMs trained after 2022 likely KNOW this result. A backtest here tests recall as much as prediction. Treat it as pipeline/calibration validation, not a clean forecast test. The live 2026 run is the uncontaminated test."
+}

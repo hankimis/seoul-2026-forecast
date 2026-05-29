@@ -1,0 +1,10 @@
+{
+  "_note": "FILL from the official NEC candidate registration (등록 D-19~, info.nec.go.kr). Knowledge cutoff is before final registration, so confirm the full list, parties, and exact names before any run. Below is partial/unverified.",
+  "election": "2026 Seoul Mayor (9th local election, 2026-06-03)",
+  "candidates": [
+    { "name": "정원오", "party": "더불어민주당", "verified": false },
+    { "name": "_TODO 국민의힘 후보_", "party": "국민의힘", "verified": false },
+    { "name": "_others from NEC registration_", "party": "", "verified": false }
+  ],
+  "last_public_poll_cutoff": "2025-05-27 (legal blackout starts 2026-05-28; use only polls published on or before this for calibration)"
+}
