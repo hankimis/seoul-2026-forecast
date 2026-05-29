@@ -4,6 +4,10 @@
     "D": "이원택",
     "P": "국힘(미미)",
     "predicted_twoway_D": 87.85,
+    "predicted_votes_man": {
+      "D": 62,
+      "P": 9
+    },
     "dwin": 0.98,
     "winner": "민주"
   },
@@ -12,6 +16,10 @@
     "D": "민형배",
     "P": "이정현",
     "predicted_twoway_D": 89.82,
+    "predicted_votes_man": {
+      "D": 120,
+      "P": 14
+    },
     "dwin": 0.98,
     "winner": "민주"
   },
@@ -20,6 +28,10 @@
     "D": "위성곤",
     "P": "문성유",
     "predicted_twoway_D": 69.26,
+    "predicted_votes_man": {
+      "D": 18,
+      "P": 8
+    },
     "dwin": 0.98,
     "winner": "민주"
   },
@@ -28,7 +40,11 @@
     "D": "추미애",
     "P": "양향자",
     "predicted_twoway_D": 60.4,
-    "dwin": 0.94,
+    "predicted_votes_man": {
+      "D": 319,
+      "P": 209
+    },
+    "dwin": 0.937,
     "winner": "민주"
   },
   {
@@ -36,7 +52,11 @@
     "D": "허태정",
     "P": "이장우",
     "predicted_twoway_D": 55.82,
-    "dwin": 0.885,
+    "predicted_votes_man": {
+      "D": 32,
+      "P": 25
+    },
+    "dwin": 0.882,
     "winner": "민주"
   },
   {
@@ -44,7 +64,11 @@
     "D": "박찬대",
     "P": "유정복",
     "predicted_twoway_D": 55.72,
-    "dwin": 0.885,
+    "predicted_votes_man": {
+      "D": 66,
+      "P": 53
+    },
+    "dwin": 0.882,
     "winner": "민주"
   },
   {
@@ -52,7 +76,11 @@
     "D": "민주 후보",
     "P": "김진태",
     "predicted_twoway_D": 55.18,
-    "dwin": 0.86,
+    "predicted_votes_man": {
+      "D": 34,
+      "P": 28
+    },
+    "dwin": 0.855,
     "winner": "민주"
   },
   {
@@ -60,7 +88,11 @@
     "D": "우상호",
     "P": "김진태",
     "predicted_twoway_D": 54.95,
-    "dwin": 0.846,
+    "predicted_votes_man": {
+      "D": 8,
+      "P": 7
+    },
+    "dwin": 0.845,
     "winner": "민주"
   },
   {
@@ -68,6 +100,10 @@
     "D": "박수현",
     "P": "김태흠",
     "predicted_twoway_D": 56.81,
+    "predicted_votes_man": {
+      "D": 48,
+      "P": 36
+    },
     "dwin": 0.799,
     "winner": "민주"
   },
@@ -76,6 +112,10 @@
     "D": "정원오",
     "P": "오세훈",
     "predicted_twoway_D": 52.05,
+    "predicted_votes_man": {
+      "D": 202,
+      "P": 186
+    },
     "dwin": 0.627,
     "winner": "민주"
   },
@@ -84,7 +124,11 @@
     "D": "신용한",
     "P": "김영환",
     "predicted_twoway_D": 51.43,
-    "dwin": 0.616,
+    "predicted_votes_man": {
+      "D": 32,
+      "P": 31
+    },
+    "dwin": 0.618,
     "winner": "민주"
   },
   {
@@ -92,7 +136,11 @@
     "D": "김경수",
     "P": "박완수",
     "predicted_twoway_D": 51.12,
-    "dwin": 0.562,
+    "predicted_votes_man": {
+      "D": 67,
+      "P": 64
+    },
+    "dwin": 0.563,
     "winner": "민주"
   },
   {
@@ -100,6 +148,10 @@
     "D": "전재수",
     "P": "박형준",
     "predicted_twoway_D": 50.75,
+    "predicted_votes_man": {
+      "D": 70,
+      "P": 68
+    },
     "dwin": 0.553,
     "winner": "민주"
   },
@@ -108,7 +160,11 @@
     "D": "김상욱",
     "P": "김두겸",
     "predicted_twoway_D": 48.63,
-    "dwin": 0.389,
+    "predicted_votes_man": {
+      "D": 22,
+      "P": 23
+    },
+    "dwin": 0.39,
     "winner": "국힘"
   },
   {
@@ -116,7 +172,11 @@
     "D": "김부겸",
     "P": "추경호",
     "predicted_twoway_D": 45.51,
-    "dwin": 0.27,
+    "predicted_votes_man": {
+      "D": 44,
+      "P": 52
+    },
+    "dwin": 0.272,
     "winner": "국힘"
   },
   {
@@ -124,6 +184,10 @@
     "D": "오중기",
     "P": "국힘 후보",
     "predicted_twoway_D": 30.31,
+    "predicted_votes_man": {
+      "D": 32,
+      "P": 73
+    },
     "dwin": 0.02,
     "winner": "국힘"
   }

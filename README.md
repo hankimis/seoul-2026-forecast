@@ -54,6 +54,31 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 
 **예상 민주 의석: 중앙값 11/16 (90% 7~14)** · 우세 민주 13 · 국힘 3(울산·대구·경북) · 티핑포인트 **부산**.
 
+### 예측 득표수 (만 표)
+
+득표율 × (선거인수 × 투표율 52% × 양당 90%). 선거인수·투표율은 근사(verify vs 선관위).
+
+| 지역 | 민주(만) | 국힘(만) | 격차(만) |
+|---|--:|--:|--:|
+| 경기 | 319 | 209 | +110 |
+| 서울 | 202 | 186 | +16 |
+| 전남광주 | 120 | 14 | +106 |
+| 부산 | 70 | 68 | **+2** |
+| 경남 | 67 | 64 | **+3** |
+| 인천 | 66 | 53 | +14 |
+| 전북 | 62 | 9 | +54 |
+| 충남 | 48 | 36 | +11 |
+| 대구 | 44 | 52 | −9 |
+| 강원 | 34 | 28 | +6 |
+| 충북 | 32 | 31 | **+2** |
+| 대전 | 32 | 25 | +7 |
+| 경북 | 32 | 73 | −41 |
+| 울산 | 22 | 23 | **−1** |
+| 제주 | 18 | 8 | +10 |
+| 세종 | 8 | 7 | +1 |
+
+**전국 양당 합계: 민주 ≈ 1,178만 표 vs 국힘 ≈ 886만 표.** 부산·경남·충북(+2~3만)·울산(−1만)이 표차 기준 초박빙. (전 지역 득표수는 `forecast-national.json`에도 기록.)
+
 ## Predicted share + post-election scoring (`score.mjs`)
 
 The model commits a **predicted two-way 민주 vote share** for every region (the `예측득표` column, also dumped to `forecast-national.json`). After polls close, fill `data/results-2026-actual.json` and run `node score.mjs` to grade it:
@@ -84,7 +109,7 @@ vhs docs/demo.tape   # regenerate docs/national.gif
 
 ## Files
 
-- `national.mjs` · `data/national-2026.json` (16 regions, polls[]+method, clusters) · `data/results-2022.json` (fundamentals) · `forecast-national.json` (output)
+- `national.mjs` · `data/national-2026.json` (16 regions, polls[]+method, clusters) · `data/results-2022.json` (fundamentals) · `data/voters-2026.json` (선거인수/투표율) · `forecast-national.json` (output)
 - `score.mjs` · `data/results-2026-actual.json` (fill after 06-03)
 - `forecast.mjs` · `personas.mjs` · `calibration.json` · `data/seoul-demographics.json` · `data/polls-2026.json`
 - `seal.mjs` (unused); `prediction*.json` git-ignored.

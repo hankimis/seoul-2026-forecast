@@ -1,0 +1,10 @@
+{
+  "_note": "APPROXIMATE eligible voters (선거인수) in 만명(10k) units + turnout/two-party assumptions. Verify vs 선관위. 전남광주 = 광주+전남 합산. 득표수 = 선거인수 x turnout x two_party_frac x 예측득표율.",
+  "turnout": 0.52,
+  "two_party_frac": 0.90,
+  "eligible_10k": {
+    "서울": 830, "부산": 295, "대구": 205, "인천": 255, "대전": 123, "세종": 32,
+    "경기": 1130, "강원": 132, "충북": 135, "충남": 180, "전북": 152, "전남광주": 285,
+    "경북": 225, "경남": 280, "울산": 95, "제주": 57
+  }
+}

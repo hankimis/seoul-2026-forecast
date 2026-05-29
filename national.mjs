@@ -8,6 +8,7 @@ const base = (p) => new URL(`./${p}`, import.meta.url);
 const nat = JSON.parse(readFileSync(base("data/national-2026.json")));
 const fund = JSON.parse(readFileSync(base("data/results-2022.json")));
 const cfg = nat.config, ADJ = cfg.method_twoway_adj;
+const vot = JSON.parse(readFileSync(base("data/voters-2026.json")));
 const SWING = 0.32, SIG_NAT = 2.5, SIG_CLU = 2.5, SIG_LOC = 3.3, SIM = 50000;
 const logit = (p) => Math.log(p/(1-p)), invlogit = (x) => 1/(1+Math.exp(-x));
 const z = () => Math.sqrt(-2*Math.log(Math.random()))*Math.cos(2*Math.PI*Math.random());
@@ -30,7 +31,12 @@ const rows = nat.regions.map((r) => {
   const wPoll = nPolls>=2 ? 0.75 : nPolls===1 ? 0.58 : 0;
   const finalD = pollD!=null && fundD!=null ? wPoll*pollD + (1-wPoll)*fundD : pollD!=null ? pollD : fundD;
   const sigLoc = SIG_LOC + Math.min(spread/2, 4); // inflate where polls disagree (method spread)
-  return { ...r, fundD, pollD, finalD, nPolls, spread, sigLoc };
+  // predicted vote counts (만표): eligible x turnout x two-party x predicted share
+  const elig = vot.eligible_10k[r.region];
+  const twoPartyCast = elig != null ? elig * vot.turnout * vot.two_party_frac : null;
+  const dVotes = twoPartyCast != null ? twoPartyCast * finalD/100 : null;
+  const pVotes = twoPartyCast != null ? twoPartyCast * (100-finalD)/100 : null;
+  return { ...r, fundD, pollD, finalD, nPolls, spread, sigLoc, dVotes, pVotes };
 });
 
 // clustered correlated Monte Carlo
@@ -61,4 +67,16 @@ console.log(`티핑포인트: ${tip.region} (예측 ${tip.finalD.toFixed(1)}%, �
 console.log(`방식차 큰 곳(예측 불확실↑): ${rows.filter(r=>r.spread>=8).map(r=>r.region+"(±"+r.spread.toFixed(0)+")").join(", ")||"없음"}`);
 console.log(`${C.D}폴D*=방식 정규화 후(전화 ${ADJ.phone}/ARS +${ADJ.ars}). 예측득표=펀더멘털⊕폴 shrinkage. σ=nat${SIG_NAT}+clu${SIG_CLU}+loc${SIG_LOC}(+방식차).${C.X}`);
 
-writeFileSync(base("forecast-national.json"), JSON.stringify(rows.map(r=>({region:r.region,D:r.D,P:r.P,predicted_twoway_D:+(+r.finalD).toFixed(2),dwin:+r.dwin.toFixed(3),winner:win(r)})),null,2));
+// 예측 득표수 (만표)
+const mv = (x) => x==null?"   -":x.toFixed(0).padStart(4);
+console.log(`\n${C.b}예측 득표수${C.X} ${C.D}(만 표 · 선거인수×투표율 ${vot.turnout}×양당 ${vot.two_party_frac}; 근사)${C.X}`);
+console.log(`${C.D}지역      민주(만)  국힘(만)  격차(만)${C.X}`);
+for (const r of [...rows].sort((a,b)=>(b.dVotes??-1)-(a.dVotes??-1))) {
+  if (r.dVotes==null) { console.log(`${r.region.padEnd(5)}   ${C.D}선거인수 미상${C.X}`); continue; }
+  const gap=r.dVotes-r.pVotes; const gc=gap>=0?C.B:C.R;
+  console.log(`${r.region.padEnd(5)} ${C.B}${mv(r.dVotes)}${C.X}    ${C.R}${mv(r.pVotes)}${C.X}    ${gc}${(gap>=0?"+":"")+gap.toFixed(0)}${C.X}`);
+}
+const totD=rows.reduce((s,r)=>s+(r.dVotes||0),0), totP=rows.reduce((s,r)=>s+(r.pVotes||0),0);
+console.log(`${C.D}전국 합계: 민주 ${totD.toFixed(0)}만 vs 국힘 ${totP.toFixed(0)}만 (양당 기준)${C.X}`);
+
+writeFileSync(base("forecast-national.json"), JSON.stringify(rows.map(r=>({region:r.region,D:r.D,P:r.P,predicted_twoway_D:+(+r.finalD).toFixed(2),predicted_votes_man:{D:r.dVotes==null?null:+r.dVotes.toFixed(0),P:r.pVotes==null?null:+r.pVotes.toFixed(0)},dwin:+r.dwin.toFixed(3),winner:win(r)})),null,2));
