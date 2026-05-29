@@ -20,10 +20,12 @@ if (candidates.length < 2) { console.error("Need >=2 verified candidates in", ca
 if (!existsSync(new URL("./personas.json", import.meta.url))) { console.error("Run: node personas.mjs first"); process.exit(1); }
 const personas = JSON.parse(readFileSync(new URL("./personas.json", import.meta.url)));
 
-// Models: openai gpt-4o-mini + fal gemini-flash (cross-model to expose partisan bias). Edit freely.
+// Cross-provider models to expose partisan bias. fal model ids must match the
+// any-llm catalog (verify with a bad-id 422 if they change). Edit freely.
+const FAL_MODELS = ["google/gemini-2.5-flash", "anthropic/claude-haiku-4.5"];
 const MODELS = [
   OAI ? { id: "gpt-4o-mini", run: askOpenAI } : null,
-  FAL ? { id: "gemini-flash", run: askFal } : null,
+  ...(FAL ? FAL_MODELS.map((fm) => ({ id: fm.split("/")[1], run: askFal(fm) })) : []),
 ].filter(Boolean);
 if (!MODELS.length) { console.error("Set OPENAI_API_KEY and/or FAL_API_KEY"); process.exit(1); }
 
@@ -44,12 +46,14 @@ async function askOpenAI(text, signal) {
   if (!r.ok) throw new Error(`openai ${r.status}`);
   return parse((await r.json()).choices?.[0]?.message?.content);
 }
-async function askFal(text, signal) {
-  const r = await fetch("https://fal.run/fal-ai/any-llm", { method: "POST", signal,
-    headers: { "Content-Type": "application/json", Authorization: `Key ${FAL}` },
-    body: JSON.stringify({ model: "google/gemini-flash-2.0", prompt: text }) });
-  if (!r.ok) throw new Error(`fal ${r.status}`);
-  return parse((await r.json()).output);
+function askFal(model) {
+  return async (text, signal) => {
+    const r = await fetch("https://fal.run/fal-ai/any-llm", { method: "POST", signal,
+      headers: { "Content-Type": "application/json", Authorization: `Key ${FAL}` },
+      body: JSON.stringify({ model, prompt: text }) });
+    if (!r.ok) throw new Error(`fal ${model} ${r.status}`);
+    return parse((await r.json()).output);
+  };
 }
 
 const cacheFile = new URL("./prediction.raw.json", import.meta.url);
