@@ -505,12 +505,12 @@ gantt
     section Blackout (§108)
     forecast sealed / private    :crit, 2026-05-28, 7d
     section Vote
-    사전투표 (early voting)       :active, 2026-05-29, 2d
-    turnout nowcast → final run   :2026-06-02, 1d
-    본투표 (election day)         :milestone, 2026-06-03, 0d
+    사전투표 early voting          :active, 2026-05-29, 2d
+    turnout nowcast final run      :2026-06-02, 1d
+    본투표 election day            :milestone, 2026-06-03, 0d
     section Score
-    polls close 18:00 · score.mjs :2026-06-03, 1d
-    적중 후속 분석                :2026-06-04, 3d
+    polls close 1800 score.mjs     :2026-06-03, 1d
+    적중 후속 분석                  :2026-06-04, 3d
 ```
 
 ## Honest limitations
