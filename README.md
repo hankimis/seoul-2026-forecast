@@ -55,6 +55,10 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 
 총투표·득표수는 **투표율 nowcast(사전투표→최종 52.3%)** 반영. 확률·구간은 **시드 고정 + 두꺼운 꼬리(heavy-tail)** MC (v8).
 
+권역 타일맵 — 색은 우세 정당, 숫자는 민주 승리확률, 색의 진하기는 확신도 (옅을수록 경합):
+
+![tile-grid map of the 16 races](docs/map.gif)
+
 | 지역 | 매치업 | 민주% | 국힘% | 예측D(양자) | 90%구간 | 총투표(만) | 민주(만) | 국힘(만) | 확률 | 당선 |
 |---|---|--:|--:|--:|:--:|--:|--:|--:|--:|:--:|
 | 전남광주 | 민형배 vs 이정현 | 80.8 | 9.2 | 89.8% | 81~99 | 155 | 125 | 14 | 98% | 🔵 |
@@ -456,6 +460,8 @@ node national.mjs       # forecast + analytics -> forecast-national.json, foreca
 node dist.mjs           # seat-distribution histogram + scenarios + vote bar
 node viz.mjs            # per-region win-probability + 90% interval chart
 node method-viz.mjs     # ARS vs phone method-bias chart
+node sensitivity.mjs    # robustness tornado (one-at-a-time levers)
+node map-viz.mjs        # tile-grid map of the 16 races
 node backtest-2022.mjs  # calibration: 2022 phone polls vs actual
 node score.mjs          # after 06-03: grade vs data/results-2026-actual.json
 vhs docs/*.tape         # regenerate the GIFs
@@ -467,7 +473,7 @@ vhs docs/*.tape         # regenerate the GIFs
 - **National model:** `national.mjs` · `dist.mjs` · `data/national-2026.json` (16 regions, polls[]+method, clusters) · `data/results-2022.json` (fundamentals) · `data/voters-2026.json` · `forecast-national.json` / `forecast-meta.json` (output)
 - **Calibration / scoring:** `backtest-2022.mjs` · `data/polls-2022-final.json` · `score.mjs` · `data/results-2026-actual.json` (fill after 06-03)
 - **LLM experiment:** `forecast.mjs` · `personas.mjs` · `calibration.json` · `data/seoul-demographics.json` · `data/polls-2026.json`
-- **Visualization:** `viz.mjs` → `docs/probs.gif` (probability + interval) · `method-viz.mjs` → `docs/method.gif` (ARS vs phone) · `sensitivity.mjs` → `docs/tornado.gif` (robustness) · Mermaid pipeline/error/cluster diagrams (inline)
+- **Visualization:** `viz.mjs` → `docs/probs.gif` (probability + interval) · `method-viz.mjs` → `docs/method.gif` (ARS vs phone) · `sensitivity.mjs` → `docs/tornado.gif` (robustness) · `map-viz.mjs` → `docs/map.gif` (tile-grid map) · Mermaid pipeline/error/cluster/timeline diagrams (inline)
 - **Misc:** `seal.mjs` (unused) · `docs/*.tape` + `docs/*.gif` · `prediction*.json` git-ignored
 
 ## Data dictionary
