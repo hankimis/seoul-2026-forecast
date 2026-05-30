@@ -16,7 +16,7 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 ---
 
 ## Contents
-1. [TL;DR](#tldr--v8-forecast) · 2. [Why two experiments](#the-two-experiments) · 3. [Version history](#version-history) · 4. [Full forecast (16)](#v8-forecast--all-16) · 5. [Seat distribution](#seat-distribution--scenarios) · 6. [Calibration (2022 backtest)](#empirical-calibration--2022-backtest) · 7. [Scoring](#predicted-share--post-election-scoring) · 8. [Methodology deep-dive](#methodology-deep-dive) · 9. [Formal specification](#formal-model-specification) (notation · parameters · data · uncertainty) · 10. [The LLM experiment](#the-llm-experiment-in-detail) · 11. [Prior art](#prior-art--related-work) · 12. [Reproducibility](#reproducibility) · 13. [Epistemics & philosophy](#on-forecasting--epistemics--philosophy) · 14. [Glossary](#glossary) · 15. [What could go wrong](#what-could-still-go-wrong) · 16. [Roadmap](#roadmap-v8-ideas) · 17. [Limitations + assumptions ledger](#honest-limitations)
+1. [TL;DR](#tldr--v8-forecast) · 2. [Why two experiments](#the-two-experiments) · 3. [Version history](#version-history) · 4. [Full forecast (16)](#v8-forecast--all-16) · 5. [Seat distribution](#seat-distribution--scenarios) · 6. [Calibration (2022 backtest)](#empirical-calibration--2022-backtest) · 7. [Scoring](#predicted-share--post-election-scoring) · 8. [Methodology deep-dive](#methodology-deep-dive) · 9. [Formal specification](#formal-model-specification) (notation · parameters · data · uncertainty) · 10. [Worked example (서울)](#worked-example--서울-end-to-end) · 11. [Robustness & sensitivity](#robustness--sensitivity) · 12. [The LLM experiment](#the-llm-experiment-in-detail) · 13. [Prior art](#prior-art--related-work) · 14. [Reproducibility](#reproducibility) · 15. [Epistemics & philosophy](#on-forecasting--epistemics--philosophy) · 16. [Glossary](#glossary) · 17. [Data dictionary](#data-dictionary) · 18. [Timeline](#timeline-to-validation) · 19. [FAQ](#faq) · 20. [Mathematical appendix](#mathematical-appendix) · 21. [Limitations + assumptions ledger](#honest-limitations)
 
 ---
 
@@ -310,6 +310,48 @@ flowchart TD
 
 > 영남(부산·울산·경남)이 한 클러스터인 게 핵심 — 셋이 모두 51–53% 경합이라, 영남 클러스터 오차 하나가 세 석을 동시에 좌우한다.
 
+## Worked example — 서울 end to end
+
+Every number in the 서울 row of the forecast table, derived by hand so the pipeline is auditable:
+
+**Inputs.** 2022 fundamentals $f_{\text{서울}}=39.9$ (민주 lost 서울 in 2022). Three 2026 polls: ARS 48.8/41.4, phone 46/35, phone 41/37.
+
+**① Fundamentals, swung.** $\varphi = 100\,\sigma(\mathrm{logit}(0.399)+0.32) = 100\,\sigma(-0.410+0.32)=100\,\sigma(-0.090) = \mathbf{47.76}$. The +0.32 logit swing lifts a 39.9 region to ~47.8 — competitive but still sub-50.
+
+**② Polls → two-way → method-normalized.**
+
+| poll | raw 민주 / 국힘 | two-way $p_j$ | + $\delta(m)$ | adjusted |
+|---|---|--:|--:|--:|
+| ARS | 48.8 / 41.4 | 54.1 | +5 | **59.1** |
+| phone | 46 / 35 | 56.8 | 0 | **56.8** |
+| phone | 41 / 37 | 52.6 | 0 | **52.6** |
+
+Poll mean $\pi = (59.1+56.8+52.6)/3 = \mathbf{56.15}$.
+
+**③ Hierarchical blend** ($n=3\ge2 \Rightarrow w=0.75$): $\mu = 0.75(56.15)+0.25(47.76) = 42.11+11.94 = \mathbf{54.05}$ → the published 서울 예측D **54.05%**.
+
+**④ Uncertainty.** Nominal $\sigma=\sqrt{2.5^2+2.5^2+2.8^2}=4.51$ → 90% band $54.05\pm1.64(4.51)=[\mathbf{46.7},\,\mathbf{61.5}]$ (printed as 44~64 after the heavy-tail-aware rounding the model applies). The band **straddles 50**, so 서울 is a *우세*, not *안정* — and indeed the MC win probability is **73%**, not 95%+.
+
+**⑤ Counts.** 선거인수 ≈ 830만 × turnout 0.535 (nowcast-scaled) × two-party 0.90 → ~444만 양당 표 → 민주 ≈ 216만 / 국힘 ≈ 183만.
+
+> The whole forecast is just this, 16 times, with the regions' errors tied together in the Monte Carlo. Nothing is hidden in a black box; you can recompute any cell with a calculator.
+
+## Robustness & sensitivity
+
+Which lever, if mis-set, would actually change the seat call? We perturb one parameter at a time and re-count 민주-leading regions (deterministic `finalD>50`):
+
+![sensitivity tornado](docs/tornado.gif)
+
+| lever | low → high | seats | reading |
+|---|---|:--:|---|
+| **전국 폴편향** | −3pt → +3pt | **11 ↔ 15** | dominant — a *correlated* poll error dwarfs every internal knob |
+| 스윙 $s$ | 0.17 → 0.47 | 13 ↔ 14 | structural prior matters only at the margin |
+| 폴 가중 $w$ | 0.60 → 0.90 | 14 ↔ 15 | mild |
+| ARS 보정 $\delta$ | +0 → +10 | 14 ↔ 14 | no seat flips at the central estimate |
+| 방식보정 OFF | 무보정 → 기준 | 14 ↔ 14 | (shifts probabilities, not the >50 call here) |
+
+**The headline robustness finding:** the model is *insensitive* to its own tuning and *sensitive* to the data. That is the right failure profile — it means the forecast is essentially "the polls, de-biased," and the real risk is not a bad parameter but a **polling industry that is collectively wrong**, which the −3pt scenario and the heavy tails are built to price.
+
 ## The LLM experiment in detail
 
 `forecast.mjs` builds a detailed synthetic Seoul electorate (district × age × gender × housing × occupation × income), asks each persona — across **claude-haiku, claude-sonnet, gpt-4o-mini** — for a vote + turnout, poststratifies, calibrates each model against a 2022 backtest, and blends with polls. The result:
@@ -327,6 +369,18 @@ This model is deliberately conventional — it implements well-established forec
 - **House-effect / mode adjustment** (here, ARS↔phone) mirrors standard pollster-bias correction in aggregators; our specific finding — that the 2022 *phone* mode was ~unbiased and ARS understated 민주 — is calibrated locally, not borrowed.
 - **Silicon sampling** — simulating respondents with LLMs (cf. Argyle et al., "Out of One, Many," *Political Analysis* 2023) — motivated the persona experiment. Our result is a cautionary negative: for a *contested, forward-looking* race the LLM electorate reproduced a training-data prior rather than the current poll signal. This is consistent with broader critiques that silicon samples encode stale, biased distributions.
 - **Markets vs models.** Prediction markets and the 오마이뉴스×STI panel are left as an ensemble hook; markets have at times outperformed models, and blending them is future work — not claimed here.
+
+### Where this sits among forecasting approaches
+
+| approach | signal | uncertainty | this model's relation |
+|---|---|---|---|
+| **Naive poll average** | latest polls | none / ±MoE | we start here, then de-bias by method and pool toward fundamentals |
+| **538 "polls-plus"** | polls ⊕ fundamentals ⊕ economy | correlated state sims | same skeleton, minus the economic index (local elections, thin data) |
+| **Economist (Gelman/Heidemanns)** | full Bayesian state-space | posterior draws, partial pooling | we approximate the *spirit* (shrinkage + correlated error) without a full MCMC posterior |
+| **MRP** | individual-level survey + census | model-based | roadmap; needs microdata we don't have |
+| **Prediction markets** | aggregated wagers | implied prob | left as an ensemble hook; sometimes beats models |
+| **LLM silicon sampling** | synthetic voters | sample noise | tried, **failed**, kept as a negative result |
+| **This repo (v8)** | polls ⊕ fundamentals, method-normalized | seeded correlated heavy-tail MC + scenario sweep | a small, auditable, reproducible take on the 538/Economist family |
 
 > Where this repo differs from a textbook implementation is mainly in *discipline*: every parameter is traced to the backtest or flagged as a prior, the failed experiment is kept in the tree, and the whole pipeline is seeded for exact reproducibility.
 
@@ -368,6 +422,18 @@ A forecast is not a prophecy. It is a **structured, falsifiable statement of unc
 - **dwin** — Monte-Carlo probability 민주 wins the region.
 - **Brier** — mean squared error of probabilities (0 perfect, 0.25 = no-skill coin-flip).
 
+**Korean political terms (for non-Korean readers):**
+
+- **광역단체장** — metropolitan executive: the mayor of a special/metropolitan city or the governor of a province (the 16 races forecast here).
+- **더불어민주당 (민주, D)** — Democratic Party, currently the 여당 (ruling party); center-left.
+- **국민의힘 (국힘, P)** — People Power Party, the main 보수 (conservative) opposition.
+- **샤이보수 (shy conservative)** — conservatives who under-report support to live interviewers; inflates apparent 민주 leads in phone polls.
+- **단일화** — candidate unification: two same-bloc candidates merging to avoid splitting the vote (key 울산 variable).
+- **사전투표 (early voting)** — the 2-day advance vote; its turnout is the basis of the election-eve turnout nowcast.
+- **양자대결 (two-way)** — head-to-head 민주 vs 국힘, dropping minor candidates.
+- **여론조사 방식** — poll mode: 전화면접(live phone interview) vs ARS(자동응답, robocall).
+- **공직선거법 제108조** — Public Official Election Act §108: bans publishing election forecasts during the pre-election blackout.
+
 ## What could still go wrong
 
 - **Shy-conservative > 2022** → phone overstates 민주 → 부산·경남·서울·충북 (all D 51–54%) flip together; 민주 falls toward the 9-seat floor.
@@ -401,8 +467,51 @@ vhs docs/*.tape         # regenerate the GIFs
 - **National model:** `national.mjs` · `dist.mjs` · `data/national-2026.json` (16 regions, polls[]+method, clusters) · `data/results-2022.json` (fundamentals) · `data/voters-2026.json` · `forecast-national.json` / `forecast-meta.json` (output)
 - **Calibration / scoring:** `backtest-2022.mjs` · `data/polls-2022-final.json` · `score.mjs` · `data/results-2026-actual.json` (fill after 06-03)
 - **LLM experiment:** `forecast.mjs` · `personas.mjs` · `calibration.json` · `data/seoul-demographics.json` · `data/polls-2026.json`
-- **Visualization:** `viz.mjs` → `docs/probs.gif` (probability + interval) · `method-viz.mjs` → `docs/method.gif` (ARS vs phone) · Mermaid pipeline/error/cluster diagrams (inline)
+- **Visualization:** `viz.mjs` → `docs/probs.gif` (probability + interval) · `method-viz.mjs` → `docs/method.gif` (ARS vs phone) · `sensitivity.mjs` → `docs/tornado.gif` (robustness) · Mermaid pipeline/error/cluster diagrams (inline)
 - **Misc:** `seal.mjs` (unused) · `docs/*.tape` + `docs/*.gif` · `prediction*.json` git-ignored
+
+## Data dictionary
+
+Field-level schema for the inputs, so any number can be traced or replaced:
+
+**`data/national-2026.json`** — the poll/structure file.
+
+| field | type | meaning |
+|---|---|---|
+| `config.method_twoway_adj` | obj | per-method two-way offset to phone basis `{phone:0, ars:5, mix:2}` |
+| `config.clusters` | obj | cluster → `[regions]` correlation grouping |
+| `regions[].region` | str | region name (key joining all files) |
+| `regions[].D` / `.P` | str | 민주 / 국힘 candidate name |
+| `regions[].cluster` | str | correlation bloc |
+| `regions[].polls[]` | arr | `{m: phone\|ars\|mix, D, P}` raw shares (%) |
+| `regions[].tier` | str? | `safe_D` / `safe_P` for poll-less strongholds |
+| `regions[].multiparty` | str? | note when a 무소속/3rd party breaks the two-way frame |
+
+**`data/results-2022.json`** — fundamentals. `national_d_twoway_2022` (scalar) + `regions[name].{d_twoway, winner}`.
+**`data/voters-2026.json`** — `two_party_frac` (β) + `regions[name].{eligible_10k, turnout}` (prior).
+**`data/turnout-2026.json`** — `{early_vote_turnout_pct, early_share, history[]}` → drives the nowcast `t = early/early_share`.
+**`forecast-national.json`** (output) — per region `{predicted_twoway_D, ci90[], raw_share_pct{D,P}, total_votes_man, votes_man{D,P}, dwin, winner}`.
+**`forecast-meta.json`** (output) — `{total, median, p90[], seat_pct[0..16], scenarios{}, votes_man{}}`.
+
+## Timeline to validation
+
+```mermaid
+gantt
+    title 2026 forecast lifecycle
+    dateFormat YYYY-MM-DD
+    axisFormat %m-%d
+    section Build
+    v1–v8 model development      :done, 2026-05-01, 29d
+    section Blackout (§108)
+    forecast sealed / private    :crit, 2026-05-28, 7d
+    section Vote
+    사전투표 (early voting)       :active, 2026-05-29, 2d
+    turnout nowcast → final run   :2026-06-02, 1d
+    본투표 (election day)         :milestone, 2026-06-03, 0d
+    section Score
+    polls close 18:00 · score.mjs :2026-06-03, 1d
+    적중 후속 분석                :2026-06-04, 3d
+```
 
 ## Honest limitations
 
@@ -432,3 +541,35 @@ Every load-bearing assumption, its risk if wrong, and the consequence — so a r
 ## Validation
 
 The real test is **2026-06-03**: fill the actuals, run `score.mjs`, read the MAE / winner accuracy / Brier. That is the model's honest report card.
+
+## FAQ
+
+**Q. Isn't publishing an election forecast illegal in Korea?** During the blackout (§108), *publishing* one is. This repo is **private and sealed** until polls close at 18:00 on 06-03; nothing is shared before then. The science can be built in the dark; only the publication is gated.
+
+**Q. Why two-way (민주 vs 국힘) instead of full multi-candidate?** Korean metropolitan races are overwhelmingly bipolar, and the two-way frame is what the backtest calibrates cleanly. Where it breaks (울산 3-way, 전북 무소속) the model carries explicit `multiparty` flags and the limitations section flags the seat-call caveats.
+
+**Q. Why not just average the polls?** Because the polls disagree by *method* (ARS vs phone differ up to 16pt), some regions have **zero** polls, and naive averages have no honest uncertainty. The model exists to de-bias mode, pool sparse regions toward fundamentals, and turn that into a calibrated probability — not a point guess.
+
+**Q. Why is the LLM experiment still in the repo if it failed?** Because deleting failures is how research lies. The negative result — LLMs reproduce a stale prior, not the present — is itself a finding, and keeping it is the honesty the whole project is about.
+
+**Q. Why a fixed random seed?** So there is exactly one forecast to defend, chosen before the result. A forecaster who can re-roll can always find a flattering run; determinism removes that degree of freedom.
+
+**Q. What would make this model *wrong*?** A correlated, pro-국힘 polling miss of ~3pt nationwide (shy-conservative > 2022) would pull 민주 from ~14 leading regions toward 11 — the single dominant risk, quantified in the tornado and the scenario sweep.
+
+**Q. Can I reproduce the numbers?** Yes: `node national.mjs` on the checked-in data yields bit-identical output. Every table cell is recomputable by hand (see the 서울 worked example).
+
+## Mathematical appendix
+
+**A. Heavy-tail variance.** The normal mixture $\varepsilon\sim 0.88\,\mathcal N(0,\sigma^2)+0.12\,\mathcal N(0,(2.4\sigma)^2)$ has mean 0 and variance $(0.88+0.12\cdot 5.76)\sigma^2=1.571\sigma^2$, so the effective standard deviation is $\sqrt{1.571}\,\sigma\approx1.253\,\sigma$. Its kurtosis exceeds 3 (leptokurtic), approximating a Student-t — rare large misses are ~2.4× more likely than a pure Gaussian at the same central σ.
+
+**B. Monte-Carlo standard error.** For a probability estimate $\hat p=\frac1N\sum\mathbf 1[\cdot]$, $\mathrm{SE}(\hat p)=\sqrt{p(1-p)/N}\le \tfrac{0.5}{\sqrt N}$. At $N=50{,}000$ this is $\le 0.0022$ — every `dwin` is accurate to **±0.22pp**, far finer than the modeling uncertainty, so MC noise is negligible.
+
+**C. Brier decomposition.** The Brier score $\mathrm{BS}=\frac1n\sum (p_i-y_i)^2$ decomposes (Murphy 1973) as
+
+$$\mathrm{BS} = \underbrace{\overline{y}(1-\overline{y})}_{\text{uncertainty}} - \underbrace{\tfrac1n\textstyle\sum_k n_k(\bar y_k-\overline y)^2}_{\text{resolution}} + \underbrace{\tfrac1n\textstyle\sum_k n_k(p_k-\bar y_k)^2}_{\text{reliability}},$$
+
+where $k$ indexes probability bins. **Reliability** (calibration) is the term we control: lower is better, zero means "70% calls happen 70% of the time." After 06-03, `score.mjs` reports the realized Brier; this decomposition is how to read *why* it landed where it did.
+
+**D. Two-way ↔ raw share.** With two-party fraction $\beta$, the raw (all-candidate) shares are $\text{민주}_{\text{raw}}=\beta\,\mu_r$ and $\text{국힘}_{\text{raw}}=\beta(100-\mu_r)$; the residual $(1-\beta)\cdot100\approx10\%$ is 제3당·무소속. This is why the table's 민주%+국힘% sums to ~90, not 100.
+
+**E. Logit-swing rationale.** Applying the swing on the log-odds scale, $\varphi=\sigma(\mathrm{logit}(f)+s)$, makes the shift **multiplicative in the odds** and bounded in $(0,1)$: a region at 50% moves the full ~+8pt, while 호남 at 85% or 경북 at 24% barely move — matching how uniform national swings actually compress at the extremes, and avoiding the out-of-range estimates a linear (additive-in-percent) swing would produce.
