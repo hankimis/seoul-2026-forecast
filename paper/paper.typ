@@ -41,7 +41,7 @@
   #v(8pt)
   #text(11.5pt)[Han Kim]
   #v(2pt)
-  #text(9pt, fill: luma(90))[IOV Labs (아이오브연구소) · #link("mailto:hankim.masion@gmail.com")[hankim.masion\@gmail.com]]
+  #text(9pt, fill: luma(90))[IOV Labs (아이오브연구소) · #link("mailto:hankim@iovstudio.kr")[hankim\@iovstudio.kr]]
   #v(3pt)
   #text(9pt, fill: luma(90))[Version 1.0 (pre-registration) · compiled #datetime.today().display("[year]-[month]-[day]")]
   #v(5pt)
