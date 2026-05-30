@@ -1,6 +1,6 @@
 # Paper — English preprint
 
-A pre-registered research-paper rendering of the forecast, built with [Typst](https://typst.app).
+A full-length (~21 pp, A4), pre-registered research-paper rendering of the forecast, built with [Typst](https://typst.app). Sections: abstract · contributions · introduction · background & related work · electoral context · data · methods (12 subsections with derivations) · calibration · results (race by race) · robustness · the silicon-sampling negative result · discussion (epistemics/ethics) · limitations & threats to validity · future work · pre-registration protocol · conclusion · references (18) · appendices (derivations · per-region data · worked example · pseudocode · Korean glossary).
 
 - **`paper.typ`** — source · **`refs.bib`** — references · **`figs/`** — static figures (extracted from the model's GIFs) · **`paper.pdf`** — output.
 

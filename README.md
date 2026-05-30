@@ -2,7 +2,7 @@
 
 ![version](https://img.shields.io/badge/model-v8-1f6feb) ![method](https://img.shields.io/badge/method-polls%20%E2%8A%95%20fundamentals-238636) ![sim](https://img.shields.io/badge/Monte%20Carlo-50k%20draws-8957e5) ![repro](https://img.shields.io/badge/reproducible-seeded-success) ![calibration](https://img.shields.io/badge/2022%20backtest-MAE%202.2pt-blue) ![status](https://img.shields.io/badge/status-sealed%20until%2006--03-critical) ![license](https://img.shields.io/badge/visibility-private-lightgrey)
 
-> 📄 **English preprint:** a pre-registered paper version is in [`paper/`](paper/) ([`paper.pdf`](paper/paper.pdf), built with Typst) — sealed now, updated 06-02 (turnout) and 06-03 (results + score).
+> 📄 **English preprint:** a full-length (~21pp) pre-registered paper is in [`paper/`](paper/) ([`paper.pdf`](paper/paper.pdf), built with Typst) — sealed now, updated 06-02 (turnout) and 06-03 (results + score).
 
 A poll + fundamentals forecast of every metropolitan mayor/governor race in the **2026-06-03** Korean local election — predicting **vote share, vote counts, win probability, 90% intervals, and scenario odds**, empirically calibrated against a 2022 backtest and self-scored after the result. Built over eight versions. It also carries an LLM-persona experiment that we keep around precisely because it *failed* — an honest negative result. Internal research, kept private.
 
