@@ -88,7 +88,7 @@ The model we present is deliberately conventional in its skeleton and deliberate
 
 == Why this problem is hard
 
-Forecasting Korean metropolitan elections poses difficulties that the well-studied US presidential case largely avoids. The races are numerous (sixteen simultaneous contests) but individually thin in public polling, with several regions effectively unpolled. The dominant survey modes — live telephone interview (전화면접) and automated response (ARS) — disagree systematically and by large margins, sometimes by more than fifteen points in two-way share, reflecting a mode-dependent version of the spiral-of-silence / shy-respondent phenomenon @noelleneumann1974. Turnout is volatile across cycles (the metropolitan turnout fell from 60.2% in 2018 to 50.9% in 2022), which matters acutely for any prediction of raw vote counts. Several races are not cleanly two-way: a region may pit the ruling party against an independent, or feature a progressive third candidate who splits the anti-incumbent vote. And the contest is governed by an election law (공직선거법 §108) that prohibits the publication of forecasts during a pre-election blackout, so the work must be conducted and sealed privately.
+Forecasting Korean metropolitan elections poses difficulties that the well-studied US presidential case largely avoids. The races are numerous (sixteen simultaneous contests) but individually thin in public polling, with several regions effectively unpolled. The dominant survey modes — live telephone interview (전화면접) and automated response (ARS) — disagree systematically and by large margins, sometimes by more than fifteen points in two-way share, reflecting a mode-dependent version of the spiral-of-silence / shy-respondent phenomenon @noelleneumann1974. Turnout is volatile across cycles (the metropolitan turnout fell from 60.2% in 2018 to 50.9% in 2022), which matters acutely for any prediction of raw vote counts. Several races are not cleanly two-way: a region may pit the ruling party against an independent, or feature a progressive third candidate who splits the anti-incumbent vote. And the contest is governed by an election law (공직선거법 §108) that restricts the publication of forecasts during a pre-election blackout — a constraint we take up in Section 10.3.
 
 == The single-event problem
 
@@ -179,7 +179,7 @@ The model is configured with the major-party match-ups for each race (Appendix B
 
 == Election law and the blackout
 
-Article 108 of the Public Official Election Act prohibits the publication of election forecasts during the pre-election blackout window. This is not merely a compliance footnote but an epistemically meaningful constraint: a published forecast is not a neutral mirror of opinion but a potential _intervention_ in it, capable of affecting turnout and morale. The law's recognition of this reflexivity is the reason the present work is conducted privately and sealed until polls close; we treat the restraint as a duty rather than an obstacle (Section 10.3).
+Article 108 of the Public Official Election Act prohibits the publication of election forecasts during the pre-election blackout window. This is not merely a compliance footnote but an epistemically meaningful constraint: a published forecast is not a neutral mirror of opinion but a potential _intervention_ in it, capable of affecting turnout and morale. The law's recognition of this reflexivity is the reason a forecaster owes the timing of publication real care; we treat that restraint as a duty rather than an obstacle (Section 10.3).
 
 // ================= 4 DATA =================
 = Data
@@ -416,11 +416,11 @@ The reason the paper insists on a proper scoring rule and a pre-committed grade 
 
 == Reflexivity and the ethics of forecasting
 
-A forecast can change the thing it forecasts. Published election predictions can affect turnout, donations, and morale; the relationship between forecast and outcome is reflexive, and metrics that become targets cease to measure cleanly. South Korea's §108 blackout is a legal recognition of exactly this hazard, and we treat it as an ethical floor rather than a ceiling: the model is built and sealed privately, and nothing is published until polls close. A forecaster whose output could influence the event being forecast has a duty of restraint that ordinary scientific publication does not impose.
+A forecast can change the thing it forecasts. Published election predictions can affect turnout, donations, and morale; the relationship between forecast and outcome is reflexive, and metrics that become targets cease to measure cleanly. South Korea's §108 blackout is a legal recognition of exactly this hazard, and we treat it as an ethical floor rather than a ceiling. A forecaster whose output could influence the event being forecast has a duty of restraint that ordinary scientific publication does not impose.
 
 == Falsifiability
 
-Finally, the entire apparatus is arranged so the model can be _wrong in public, by a measurable amount, on a fixed date_. The sealed predictions, the pre-committed scoring script, and the $plus.minus 3%$ target exist so that 3 June can disconfirm the forecast. A claim that cannot fail conveys no information; a forecast one cannot lose is not a forecast. This is the sense in which the work aspires to be science rather than commentary.
+Finally, the entire apparatus is arranged so the model can be _wrong in public, by a measurable amount, on a fixed date_. The committed predictions, the pre-committed scoring script, and the $plus.minus 3%$ target exist so that 3 June can disconfirm the forecast. A claim that cannot fail conveys no information; a forecast one cannot lose is not a forecast. This is the sense in which the work aspires to be science rather than commentary.
 
 // ================= 11 LIMITATIONS =================
 = Limitations and threats to validity
