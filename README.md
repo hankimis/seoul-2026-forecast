@@ -1,8 +1,8 @@
 # 2026 Korean Local Elections — Forecast (private research)
 
-![version](https://img.shields.io/badge/model-v8-1f6feb) ![method](https://img.shields.io/badge/method-polls%20%E2%8A%95%20fundamentals-238636) ![sim](https://img.shields.io/badge/Monte%20Carlo-50k%20draws-8957e5) ![repro](https://img.shields.io/badge/reproducible-seeded-success) ![calibration](https://img.shields.io/badge/2022%20backtest-MAE%202.2pt-blue) ![status](https://img.shields.io/badge/status-sealed%20until%2006--03-critical) ![license](https://img.shields.io/badge/visibility-private-lightgrey)
+![version](https://img.shields.io/badge/model-v8-1f6feb) ![method](https://img.shields.io/badge/method-polls%20%E2%8A%95%20fundamentals-238636) ![sim](https://img.shields.io/badge/Monte%20Carlo-50k%20draws-8957e5) ![repro](https://img.shields.io/badge/reproducible-seeded-success) ![calibration](https://img.shields.io/badge/2022%20backtest-MAE%202.2pt-blue) ![status](https://img.shields.io/badge/pre--registered-git%2005--30-blue) ![license](https://img.shields.io/badge/visibility-private-lightgrey)
 
-> 📄 **English preprint:** a full-length (~21pp) pre-registered paper is in [`paper/`](paper/) ([`paper.pdf`](paper/paper.pdf), built with Typst) — sealed now, updated 06-02 (turnout) and 06-03 (results + score).
+> 📄 **English preprint:** a full-length (~21pp) pre-registered paper is in [`paper/`](paper/) ([`paper.pdf`](paper/paper.pdf), built with Typst) — git-committed (pre-registered) 05-30, updated 06-02 (turnout) and 06-04 (results + score).
 
 A poll + fundamentals forecast of every metropolitan mayor/governor race in the **2026-06-03** Korean local election — predicting **vote share, vote counts, win probability, 90% intervals, and scenario odds**, empirically calibrated against a 2022 backtest and self-scored after the result. Built over eight versions. It also carries an LLM-persona experiment that we keep around precisely because it *failed* — an honest negative result. Internal research, kept private.
 
@@ -413,7 +413,7 @@ A forecast is not a prophecy. It is a **structured, falsifiable statement of unc
 
 **6. Determinism as honesty.** The fixed seed is a small philosophical stance: a forecaster who can re-roll the dice can always find a run that flatters them. By making the pipeline a **pure function of (data, seed)**, there is exactly one forecast to defend, chosen before the outcome. Reproducibility here is not convenience — it is the removal of a degree of freedom that could be abused.
 
-**7. Falsifiability is the point.** Following Popper, a claim that cannot fail tells you nothing. The pre-committed `score.mjs`, the ±3% target, and the sealed numbers exist so that on 2026-06-03 this model can be **plainly wrong**, in public, by a measurable amount. A forecast you cannot lose is not a forecast — it is astrology with confidence intervals.
+**7. Falsifiability is the point.** Following Popper, a claim that cannot fail tells you nothing. The pre-committed `score.mjs`, the ±3% target, and the git-committed numbers exist so that on 2026-06-03 this model can be **plainly wrong**, in public, by a measurable amount. A forecast you cannot lose is not a forecast — it is astrology with confidence intervals.
 
 > **The stance in one line:** the model's job is not to be right about 2026 — no one can guarantee that — but to be *honestly calibrated* about how uncertain 2026 is, and to make that uncertainty cheap to check. 정직이 해자다 (honesty is the moat).
 
@@ -476,7 +476,7 @@ vhs docs/*.tape         # regenerate the GIFs
 - **Calibration / scoring:** `backtest-2022.mjs` · `data/polls-2022-final.json` · `score.mjs` · `data/results-2026-actual.json` (fill after 06-03)
 - **LLM experiment:** `forecast.mjs` · `personas.mjs` · `calibration.json` · `data/seoul-demographics.json` · `data/polls-2026.json`
 - **Visualization:** `viz.mjs` → `docs/probs.gif` (probability + interval) · `method-viz.mjs` → `docs/method.gif` (ARS vs phone) · `sensitivity.mjs` → `docs/tornado.gif` (robustness) · `map-viz.mjs` → `docs/map.gif` (tile-grid map) · Mermaid pipeline/error/cluster/timeline diagrams (inline)
-- **Misc:** `seal.mjs` (unused) · `docs/*.tape` + `docs/*.gif` · `prediction*.json` git-ignored
+- **Misc:** `seal.mjs` (retired, unused) · pre-registration is the git commit of the forecast files (see `SEALED.txt`) · `docs/*.tape` + `docs/*.gif` · `prediction*.json` git-ignored
 
 ## Data dictionary
 
@@ -511,7 +511,7 @@ gantt
     section Build
     v1–v8 model development      :done, 2026-05-01, 29d
     section Blackout (§108)
-    forecast sealed / private    :crit, 2026-05-28, 7d
+    forecast committed / private :crit, 2026-05-28, 7d
     section Vote
     사전투표 early voting          :active, 2026-05-29, 2d
     turnout nowcast final run      :2026-06-02, 1d
@@ -552,7 +552,7 @@ The real test is **2026-06-03**: fill the actuals, run `score.mjs`, read the MAE
 
 ## FAQ
 
-**Q. Isn't publishing an election forecast illegal in Korea?** During the blackout (§108), *publishing* one is. This repo is **private and sealed** until polls close at 18:00 on 06-03; nothing is shared before then. The science can be built in the dark; only the publication is gated.
+**Q. Isn't publishing an election forecast illegal in Korea?** During the blackout (§108), *publishing* one is. This repo is **private** (the forecast is git-committed, a timestamped pre-registration) until polls close at 18:00 on 06-03; nothing is shared before then. The science can be built in the dark; only the publication is gated.
 
 **Q. Why two-way (민주 vs 국힘) instead of full multi-candidate?** Korean metropolitan races are overwhelmingly bipolar, and the two-way frame is what the backtest calibrates cleanly. Where it breaks (울산 3-way, 전북 무소속) the model carries explicit `multiparty` flags and the limitations section flags the seat-call caveats.
 

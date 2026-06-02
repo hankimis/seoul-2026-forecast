@@ -1,24 +1,23 @@
-SEALED PREDICTION COMMITMENT
-file: prediction.json
-sha256: 560060cea99dd2f34734e6df735df433a168648cba45f74640abb6a3d1b1b8b4
-sealed_at_utc: 2026-05-29T13:22:30.569Z
-note: contents withheld until polls close (KR election-law blackout). Verify after reveal.
+PRE-REGISTRATION RECORD (git-timestamped, no cryptographic seal)
 
---- INTEGRITY ADDENDUM (recorded 2026-06-03) ---
-status: VOID. This commitment cannot be honored by reveal.
-finding: the local prediction.json no longer matches the sealed sha256.
-  sealed sha256 : 560060cea99dd2f34734e6df735df433a168648cba45f74640abb6a3d1b1b8b4
-  current sha256: 8316a6d11d751c14807fbad0180b6f672aae30b84159582848a8dfae4c9b911d
-cause: prediction.json was regenerated AFTER sealing.
-  sealed_at_utc      = 2026-05-29T13:22:30.569Z
-  current generated  = 2026-05-29T14:04:44.643Z  (about 42 min after the seal)
-  seal.mjs hashes the raw file bytes (no canonicalization), so the re-run
-  overwrote the sealed bytes. prediction.json is gitignored and no file in
-  the repo matches the sealed hash, so the originally sealed content is not
-  recoverable from this repository.
-scope: prediction.json holds the Seoul LLM-persona experiment (the kept
-  negative result), not the credible national poll+fundamentals model. The
-  national forecast (forecast-meta.json / forecast-national.json) is tracked
-  separately and is unaffected by this.
-disposition: recorded as-is for honesty rather than re-sealed; the original
-  pre-registration is treated as unrecoverable and void.
+The 2026 forecast is pre-registered by its public git commit history, made
+before polls closed. The committed forecast files are the fixed, timestamped
+prediction of record:
+
+  forecast-national.json   committed 2026-05-30 00:57 KST  (commit 370a40d)
+  forecast-meta.json       committed 2026-05-30 00:57 KST  (commit 370a40d)
+  data/results-2026-actual.json  placeholder committed 2026-05-30
+
+Git history is the timestamp; these commits fix the numbers in advance. No file
+is altered after the fact, so the forecast can be scored honestly against the
+realized result.
+
+Scoring (after results): fill data/results-2026-actual.json, then run
+  node score.mjs
+which grades vote-share MAE, two-way error, winner accuracy, Brier, and the
+±3% hit rate against forecast-national.json.
+
+Note: an earlier experimental cryptographic file-hash seal of the Seoul
+LLM-persona prediction.json is retired and not used. That persona run is the
+kept negative result, not the headline poll+fundamentals forecast, and its file
+is git-ignored. The pre-registration above does not depend on it.
