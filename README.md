@@ -1,10 +1,10 @@
-# 2026 Korean Local Elections — Forecast (private research)
+# 2026 Korean Local Elections — Forecast
 
-![version](https://img.shields.io/badge/model-v8-1f6feb) ![method](https://img.shields.io/badge/method-polls%20%E2%8A%95%20fundamentals-238636) ![sim](https://img.shields.io/badge/Monte%20Carlo-50k%20draws-8957e5) ![repro](https://img.shields.io/badge/reproducible-seeded-success) ![calibration](https://img.shields.io/badge/2022%20backtest-MAE%202.2pt-blue) ![status](https://img.shields.io/badge/pre--registered-git%2005--30-blue) ![license](https://img.shields.io/badge/visibility-private-lightgrey)
+![version](https://img.shields.io/badge/model-v8-1f6feb) ![method](https://img.shields.io/badge/method-polls%20%E2%8A%95%20fundamentals-238636) ![sim](https://img.shields.io/badge/Monte%20Carlo-50k%20draws-8957e5) ![repro](https://img.shields.io/badge/reproducible-seeded-success) ![calibration](https://img.shields.io/badge/2022%20backtest-MAE%202.2pt-blue) ![status](https://img.shields.io/badge/pre--registered-git%2005--30-blue) ![license](https://img.shields.io/badge/visibility-public-success)
 
 > 📄 **English preprint:** a full-length (~21pp) pre-registered paper is in [`paper/`](paper/) ([`paper.pdf`](paper/paper.pdf), built with Typst) — git-committed (pre-registered) 05-30, updated 06-02 (turnout) and 06-04 (results + score).
 
-A poll + fundamentals forecast of every metropolitan mayor/governor race in the **2026-06-03** Korean local election — predicting **vote share, vote counts, win probability, 90% intervals, and scenario odds**, empirically calibrated against a 2022 backtest and self-scored after the result. Built over eight versions. It also carries an LLM-persona experiment that we keep around precisely because it *failed* — an honest negative result. Internal research, kept private.
+A poll + fundamentals forecast of every metropolitan mayor/governor race in the **2026-06-03** Korean local election — predicting **vote share, vote counts, win probability, 90% intervals, and scenario odds**, empirically calibrated against a 2022 backtest and self-scored after the result. Built over eight versions. It also carries an LLM-persona experiment that we keep around precisely because it *failed*, an honest negative result. Published openly after polls closed.
 
 > **Abstract.** We forecast the 16 metropolitan-executive (광역단체장) races of Korea's 9th local election (2026-06-03) by combining a **structural fundamentals** estimate (each region's 2022 two-way vote, swung to the 2026 environment on the logit scale) with **method-normalized poll aggregates**, fused by poll-count-weighted hierarchical shrinkage. Outcome uncertainty is propagated through a **50,000-draw correlated Monte Carlo** with a three-level error budget (national ⊕ cluster ⊕ local) and **heavy-tailed (normal-mixture ≈ Student-t)** innovations, so that a single nationwide polling miss moves correlated blocs together. The pipeline is **seeded and fully reproducible**. The central estimate is **민주 12 / 16 seats** (90% credible range 8–15), with five genuine tossups (서울·부산·경남·충북·울산). We calibrate the error model on the 2022 final phone polls (bias −0.1pt, MAE 2.2pt, σ≈2.6) and quantify the dominant failure mode — a *correlated* poll bias — with an explicit ±4pt scenario sweep (−3pt → 11 seats). A parallel **silicon-sampling** experiment (an LLM-persona electorate) is reported as a **negative result**: it contradicted every real poll and added bias, not signal. The model self-scores against the realized result via a pre-committed `score.mjs` after polls close.
 >
@@ -12,7 +12,7 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 
 ![national forecast v8](docs/national.gif)
 
-> ⚠️ **Private / election law.** 공직선거법 제108조 bans publishing election forecasts during the blackout (2026-05-28 → 06-03 18:00). This repo is private; nothing is published until polls close.
+> ✅ **Published post-election.** 공직선거법 제108조 bans publishing election forecasts during the blackout (2026-05-28 to 06-03 18:00). The repo was kept private through that window and made public after polls closed at 18:00 on 06-03. The pre-registration (forecast files git-committed 05-30) predates the result.
 > **Structural note:** 광주 + 전남 merged into **전남광주통합특별시** → one race (민형배 vs 이정현), so **16 광역단체장** (verify vs 선관위).
 
 ---
@@ -407,7 +407,7 @@ A forecast is not a prophecy. It is a **structured, falsifiable statement of unc
 
 **3. Calibration is the only virtue that survives contact with reality.** A confident wrong forecast and a hedged wrong forecast are not equally bad: the first lies about how much it knew. So this model would rather say *12 seats, 90% range 8–15* than *13 seats, certainly* — the wider, less impressive interval is the more honest one. Heavy tails, correlated errors, and the −3pt scenario all exist to **resist the temptation of false precision**. Being 후회 없이 정확해 보이는 것보다, 틀릴 수 있는 범위를 정직하게 말하는 편이 낫다.
 
-**4. The observer changes the observed (reflexivity).** Publishing a forecast can move turnout, donations, and morale — Soros's reflexivity and Goodhart's law both bite. Korea's 공직선거법 제108조 blackout is a legal recognition of exactly this: a forecast is not a neutral mirror but an **intervention**. That is the ethical reason this repo stays private until polls close, not merely a compliance checkbox. A model that could influence the thing it measures has a duty of restraint.
+**4. The observer changes the observed (reflexivity).** Publishing a forecast can move turnout, donations, and morale — Soros's reflexivity and Goodhart's law both bite. Korea's 공직선거법 제108조 blackout is a legal recognition of exactly this: a forecast is not a neutral mirror but an **intervention**. That is the ethical reason this repo stayed private through the blackout and was published only after polls closed, not merely a compliance checkbox. A model that could influence the thing it measures has a duty of restraint.
 
 **5. The silicon-sampling failure is an epistemological parable.** The LLM electorate didn't just underperform — it failed *informatively*. Asked to imagine a 2026 voter, the models returned a **2023-era training prior** dressed as a prediction: they reproduced what voters *were*, not what polls now say they *are*. The lesson generalizes beyond elections: an LLM's fluency about the world is **memory, not measurement**. It interpolates the distribution it was trained on; it does not observe the present. Keeping that negative result in the tree is itself an epistemic commitment — **we publish what disconfirms us**, because a research program that only keeps its wins is indistinguishable from one that learns nothing.
 
@@ -552,7 +552,7 @@ The real test is **2026-06-03**: fill the actuals, run `score.mjs`, read the MAE
 
 ## FAQ
 
-**Q. Isn't publishing an election forecast illegal in Korea?** During the blackout (§108), *publishing* one is. This repo is **private** (the forecast is git-committed, a timestamped pre-registration) until polls close at 18:00 on 06-03; nothing is shared before then. The science can be built in the dark; only the publication is gated.
+**Q. Isn't publishing an election forecast illegal in Korea?** During the blackout (§108), *publishing* one is. This repo was **private** through the blackout (the forecast is git-committed, a timestamped pre-registration) and was made public after polls closed at 18:00 on 06-03; nothing was shared before then. The science can be built in the dark; only the publication is gated.
 
 **Q. Why two-way (민주 vs 국힘) instead of full multi-candidate?** Korean metropolitan races are overwhelmingly bipolar, and the two-way frame is what the backtest calibrates cleanly. Where it breaks (울산 3-way, 전북 무소속) the model carries explicit `multiparty` flags and the limitations section flags the seat-call caveats.
 
