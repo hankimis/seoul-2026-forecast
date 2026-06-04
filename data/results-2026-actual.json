@@ -1,8 +1,82 @@
 {
-  "_note": "FILL after 2026-06-03 18:00. region: { total_man: 총투표(만), D_pct: 민주 득표율%, P_pct: 국힘 득표율% } (raw % of all votes). score.mjs grades vs the forecast (±3% target).",
+  "_note": "region: { total_man: 총투표(만), D_pct: 민주 득표율%, P_pct: 국힘 득표율% } (raw % of all votes). score.mjs grades vs the forecast (±3% target).",
+  "_source": "FINAL (national count 99.38%, 2026-06-04). Share figures consolidated from most-complete-count news sources; +/-1-2pt source variance, total_man null. 전북 null (민주 share ~52.7% on a 3-way split, 국힘 share unavailable). Seats: 민주 13 / 국힘 3 (대구·경북·경남).",
   "regions": {
-    "서울": null, "부산": null, "대구": null, "인천": null, "대전": null, "세종": null,
-    "경기": null, "강원": null, "충북": null, "충남": null, "전북": null, "전남광주": null,
-    "경북": null, "경남": null, "울산": null, "제주": null
+    "서울": {
+      "total_man": null,
+      "D_pct": 53.5,
+      "P_pct": 42.9
+    },
+    "부산": {
+      "total_man": null,
+      "D_pct": 53.9,
+      "P_pct": 44.4
+    },
+    "대구": {
+      "total_man": null,
+      "D_pct": 46.6,
+      "P_pct": 52.4
+    },
+    "인천": {
+      "total_man": null,
+      "D_pct": 53.7,
+      "P_pct": 45.5
+    },
+    "대전": {
+      "total_man": null,
+      "D_pct": 55.9,
+      "P_pct": 42.9
+    },
+    "세종": {
+      "total_man": null,
+      "D_pct": 64.3,
+      "P_pct": 32.9
+    },
+    "경기": {
+      "total_man": null,
+      "D_pct": 54.8,
+      "P_pct": 39.7
+    },
+    "강원": {
+      "total_man": null,
+      "D_pct": 54.6,
+      "P_pct": 42.0
+    },
+    "충북": {
+      "total_man": null,
+      "D_pct": 56.2,
+      "P_pct": 43.8
+    },
+    "충남": {
+      "total_man": null,
+      "D_pct": 52.1,
+      "P_pct": 47.9
+    },
+    "전북": null,
+    "전남광주": {
+      "total_man": null,
+      "D_pct": 81.6,
+      "P_pct": 9.5
+    },
+    "경북": {
+      "total_man": null,
+      "D_pct": 30.0,
+      "P_pct": 64.3
+    },
+    "경남": {
+      "total_man": null,
+      "D_pct": 48.5,
+      "P_pct": 51.5
+    },
+    "울산": {
+      "total_man": null,
+      "D_pct": 52.8,
+      "P_pct": 43.2
+    },
+    "제주": {
+      "total_man": null,
+      "D_pct": 62.2,
+      "P_pct": 34.9
+    }
   }
 }
