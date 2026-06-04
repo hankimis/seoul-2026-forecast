@@ -403,6 +403,26 @@ It did not work. The three models disagreed wildly: claude-haiku returned almost
 
 We read this as an epistemological rather than merely an engineering failure. Asked to imagine a 2026 voter, the models returned a distribution anchored in their training data — what 서울 voters _were_, filtered through whatever priors the models encode — not what 서울 voters, as measured by current polls, now _are_. An LLM's fluency about the social world is _memory_, not _measurement_: it interpolates a training-time distribution and does not observe the present. For a stable, backward-looking quantity this may suffice; for a contested, forward-looking race it injects a stale prior dressed as a prediction. We therefore exclude the silicon sample from the headline forecast and retain it, unused, as a documented negative result — because a research program that keeps only its successes is indistinguishable from one that learns nothing.
 
+// ================= REALIZED OUTCOME =================
+= Realized outcome (2026-06-04)
+
+The election was held on 2026-06-03. At 99.38% of the national count, the sixteen metropolitan-executive races returned *민주 13 / 국힘 3* (the People Power Party holding 대구, 경북, and 경남). Graded by the pre-committed scoring script against the forecast that was git-committed on 05-30, before polls, the model's report card is:
+
+#table(
+  columns: (auto, 1fr),
+  inset: 5pt, align: (left, left), stroke: 0.4pt + luma(180),
+  table.header([*Metric*], [*Realized*]),
+  [Winner accuracy], [15 / 16 (only miss: 경남)],
+  [Seats (민주)], [13 (probabilistic median 12; 90% range 8 to 15)],
+  [Brier score], [0.077 (no-skill 0.25; 2022 backtest 0.137)],
+  [Two-way share MAE], [3.3 pt],
+  [Raw share MAE], [6.7 pt],
+)
+
+The forecast called fifteen of sixteen winners. The single miss was 경남, where the model assigned the Democrat a 65% win probability and the People Power candidate 박완수 won by roughly three points. A sixty-five-percent favorite losing is consistent with calibration rather than a failure of it, and the Brier score reflects that the model committed only 0.65, not certainty. The realized total of thirteen Democratic seats falls inside the pre-registered 90% interval of 8 to 15 and one seat below the probabilistic median of twelve, so the seat-level uncertainty was sized correctly. Notably, the model called 대구 for the People Power Party against an exit poll that had read it as a toss-up, and it called the tipping-point race, 울산, correctly for the Democrats.
+
+The honest weakness is on raw vote share. The model systematically under-predicted the Democratic raw share by about five points (for example 세종 51 to 64, 울산 45 to 53, 충북 47 to 56, 부산 48 to 54), so the raw-share MAE of 6.7 points overshot the 2.2-point expectation set by the 2022 backtest. The two-way MAE (3.3 points), winner accuracy, and Brier nonetheless held, because the central estimate was conservative toward the Democrats on share in a way that widened correctly into the seat distribution while costing share precision. Two caveats bound the share numbers: per-region shares are read at the 99.38% count with roughly one to two points of cross-source variance, and 전북 is excluded from the share error because its Democratic share fell to about 52.7% on a three-way split with the People Power share unavailable. The grade was produced with no post-hoc adjustment; the scoring script and the plus-or-minus-three-point target were fixed before the result was known.
+
 // ================= 10 DISCUSSION =================
 = Discussion
 
