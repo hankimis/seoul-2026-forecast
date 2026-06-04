@@ -1,12 +1,12 @@
 # 2026 Korean Local Elections — Forecast
 
-![version](https://img.shields.io/badge/model-v8-1f6feb) ![method](https://img.shields.io/badge/method-polls%20%E2%8A%95%20fundamentals-238636) ![sim](https://img.shields.io/badge/Monte%20Carlo-50k%20draws-8957e5) ![repro](https://img.shields.io/badge/reproducible-seeded-success) ![calibration](https://img.shields.io/badge/2022%20backtest-MAE%202.2pt-blue) ![status](https://img.shields.io/badge/pre--registered-git%2005--30-blue) ![result](https://img.shields.io/badge/scored-15%2F16%20·%20Brier%200.077-success) ![license](https://img.shields.io/badge/visibility-public-success)
+![version](https://img.shields.io/badge/model-v8-1f6feb) ![method](https://img.shields.io/badge/method-polls%20%E2%8A%95%20fundamentals-238636) ![sim](https://img.shields.io/badge/Monte%20Carlo-50k%20draws-8957e5) ![repro](https://img.shields.io/badge/reproducible-seeded-success) ![calibration](https://img.shields.io/badge/2022%20backtest-MAE%202.2pt-blue) ![status](https://img.shields.io/badge/pre--registered-git%2005--30-blue) ![result](https://img.shields.io/badge/scored-14%2F16%20·%20median%2012%2F12%20·%20Brier%200.107-success) ![license](https://img.shields.io/badge/visibility-public-success)
 
 > 📄 **English preprint:** a full-length (~21pp) pre-registered paper is in [`paper/`](paper/) ([`paper.pdf`](paper/paper.pdf), built with Typst) — git-committed (pre-registered) 05-30, updated 06-02 (turnout) and 06-04 (results + score).
 
 A poll + fundamentals forecast of every metropolitan mayor/governor race in the **2026-06-03** Korean local election — predicting **vote share, vote counts, win probability, 90% intervals, and scenario odds**, empirically calibrated against a 2022 backtest and self-scored after the result. Built over eight versions. It also carries an LLM-persona experiment that we keep around precisely because it *failed*, an honest negative result. Published openly after polls closed.
 
-> **Abstract.** We forecast the 16 metropolitan-executive (광역단체장) races of Korea's 9th local election (2026-06-03) by combining a **structural fundamentals** estimate (each region's 2022 two-way vote, swung to the 2026 environment on the logit scale) with **method-normalized poll aggregates**, fused by poll-count-weighted hierarchical shrinkage. Outcome uncertainty is propagated through a **50,000-draw correlated Monte Carlo** with a three-level error budget (national ⊕ cluster ⊕ local) and **heavy-tailed (normal-mixture ≈ Student-t)** innovations, so that a single nationwide polling miss moves correlated blocs together. The pipeline is **seeded and fully reproducible**. The central estimate is **민주 12 / 16 seats** (90% credible range 8–15), with five genuine tossups (서울·부산·경남·충북·울산). We calibrate the error model on the 2022 final phone polls (bias −0.1pt, MAE 2.2pt, σ≈2.6) and quantify the dominant failure mode — a *correlated* poll bias — with an explicit ±4pt scenario sweep (−3pt → 11 seats). A parallel **silicon-sampling** experiment (an LLM-persona electorate) is reported as a **negative result**: it contradicted every real poll and added bias, not signal. The model self-scores against the realized result via a pre-committed `score.mjs` after polls close. *Realized (99.38% count): winner accuracy 15/16 (miss 경남), seats 민주 13 / 국힘 3 inside the 90% range, Brier 0.077, two-way MAE 3.3pt, with a systematic ~5pt 민주-low bias on raw share.*
+> **Abstract.** We forecast the 16 metropolitan-executive (광역단체장) races of Korea's 9th local election (2026-06-03) by combining a **structural fundamentals** estimate (each region's 2022 two-way vote, swung to the 2026 environment on the logit scale) with **method-normalized poll aggregates**, fused by poll-count-weighted hierarchical shrinkage. Outcome uncertainty is propagated through a **50,000-draw correlated Monte Carlo** with a three-level error budget (national ⊕ cluster ⊕ local) and **heavy-tailed (normal-mixture ≈ Student-t)** innovations, so that a single nationwide polling miss moves correlated blocs together. The pipeline is **seeded and fully reproducible**. The central estimate is **민주 12 / 16 seats** (90% credible range 8–15), with five genuine tossups (서울·부산·경남·충북·울산). We calibrate the error model on the 2022 final phone polls (bias −0.1pt, MAE 2.2pt, σ≈2.6) and quantify the dominant failure mode — a *correlated* poll bias — with an explicit ±4pt scenario sweep (−3pt → 11 seats). A parallel **silicon-sampling** experiment (an LLM-persona electorate) is reported as a **negative result**: it contradicted every real poll and added bias, not signal. The model self-scores against the realized result via a pre-committed `score.mjs` after polls close. *Realized (certified final): winner accuracy 14/16 (misses 서울 and 경남, the two closest races, both narrow 국힘 upsets that also beat the exit polls), with the realized 민주 seat count of 12 exactly matching the forecast's probabilistic median; Brier 0.107, two-way MAE 3.6pt, and a systematic under-estimate of the 국힘 raw share.*
 >
 > **Keywords:** election forecasting · poll aggregation · hierarchical shrinkage · correlated Monte Carlo · heavy-tailed errors · calibration · Brier score · silicon sampling (negative result) · reproducibility
 
@@ -24,7 +24,7 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 
 ## TL;DR — v8 forecast
 
-> **Result (2026-06-04, 99.38% count):** winner accuracy **15/16** (miss: 경남), seats **민주 13 / 국힘 3** (inside the 90% range, one off the median 12), **Brier 0.077**, two-way MAE 3.3pt. The model called winners and seats well but ran about 5pt 민주-low on raw share. See [Realized score](#realized-score-2026-06-04-national-count-9938).
+> **Result (2026-06-04, certified final):** winner accuracy **14/16** (misses 서울 and 경남, the two closest races in the country, both narrow 국힘 upsets that also beat the exit polls). Realized seats **민주 12 / 국힘 4**, which is **exactly the forecast's probabilistic median of 12**. **Brier 0.107** (no-skill 0.25), two-way MAE 3.6pt. The seat median was dead-on; the two flagged toss-ups broke against the point call, and raw share ran low on 국힘. See [Realized score](#realized-score-2026-06-04-certified-final).
 
 - **민주(여당) median 12 / 16 seats** (90% range 8–15); 국힘 holds **대구·경북**. `P(민주 ≥ 12) = 64%`, `P(민주 ≥ 10) = 87%`. 단, 친국힘 −3pt 상관오차면 **11석**까지 하락 (한쪽 통째 오류 리스크).
 - **Tipping point: 울산** (50.4%, 민주 53%). Other tossups lean 민주: 부산·경남·충북·서울.
@@ -167,23 +167,23 @@ The model commits, per region, a **raw vote share (민주%/국힘%)**, a **two-w
 
 Honest expectation on ±3%: the 2022 backtest had a **2.2pt share MAE** — so **vote-share ±3% is realistic on average** (not guaranteed in the tossups). **Total-voters ±3% is the harder one**: 선거인수 is known, but it hinges on the **turnout estimate**, which swings cycle-to-cycle (2018 60.2% → 2022 50.9%); plug exact 선관위 선거인수 + an election-eve turnout nowcast to actually hit it.
 
-### Realized score (2026-06-04, national count 99.38%)
+### Realized score (2026-06-04, certified final)
 
-The election returned **민주 13 / 국힘 3** (국힘 holds 대구, 경북, 경남). Scored against the pre-registered forecast (`forecast-national.json`, git-committed 05-30):
+The election returned **민주 12 / 국힘 4** (국힘 won 서울, 대구, 경북, 경남). Scored against the pre-registered forecast (`forecast-national.json`, git-committed 05-30):
 
 | metric | result |
 |---|---|
-| **Winner accuracy** | **15 / 16** (only miss: 경남) |
-| **Seat count** | actual 민주 13 vs forecast median 12, 90% range 8-15 (inside) |
-| **Brier** | **0.077** (no-skill 0.25) |
-| **Two-way MAE** | **3.3pt** |
-| raw-share MAE | 6.7pt (see note below) |
+| **Winner accuracy** | **14 / 16** (misses: 서울, 경남) |
+| **Seat count** | actual 민주 12 = forecast probabilistic median 12 (exact); 90% range 8-15 |
+| **Brier** | **0.107** (no-skill 0.25; 2022 backtest 0.137) |
+| **Two-way MAE** | **3.6pt** |
+| raw-share MAE | 6.9pt (see note below) |
 
-What it got right: every region except 경남, including the 대구 국힘 hold (called correctly against an exit poll that had 대구 as 경합) and the tipping-point 울산 going 민주. The seat total (13) sits inside the 90% range and one seat off the probabilistic median (12).
+The standout is the seat count: the model's probabilistic **median of 12 Democratic seats was exactly right**, even though its deterministic point estimate (14) over-counted by two. The reason is calibration. 서울 and 경남 were both flagged as toss-ups (win probabilities 0.73 and 0.65), so the Monte Carlo median already discounted them. The aggregate was well-sized even where the individual point calls erred.
 
-The one miss, 경남: the forecast gave 민주 a 65% win probability and 국힘 박완수 won by about 3pt. A 65% favorite losing is well within calibration, and the Brier reflects that the model claimed only 65%, not certainty.
+The two misses, 서울 and 경남, were the two closest races in the country and both broke 국힘 against the forecast and the exit polls. 서울 was historic: 오세훈 (국힘) overturned an exit-poll deficit of 5 to 11 points to win a fifth term by **0.6pt (about 30,000 votes)**, the tightest metropolitan-executive race on record, with the lead changing hands four times during the count. 경남 박완수 (국힘) similarly reversed an 8-point exit-poll deficit. The forecast had given the Democrats 73% in 서울 and 65% in 경남; losing two such favorites is within calibration, but it is what the Brier (0.107) and the 14/16 record reflect. The model did correctly hold 대구 for 국힘 (against an exit poll that read it as 경합) and called the tipping-point race, 울산, for the Democrats.
 
-Honest weakness: the model **systematically under-predicted 민주 raw vote share** by roughly 5pt (세종 51 to 64, 울산 45 to 53, 충북 47 to 56, 부산 48 to 54). That is why raw-share MAE (6.7pt) overshot the 2.2pt backtest expectation while the two-way MAE (3.3pt), winner accuracy, and Brier stayed strong: the central estimate was 민주-conservative on share, which helped the seat calibration but hurt share precision. Figures are at 99.38% national count; per-region shares carry +/-1-2pt source variance, and 전북 is excluded from the share MAE (민주 share fell to about 52.7% on a 3-way split, 국힘 share unavailable).
+Honest weakness on raw share: the model **under-predicted the 국힘 raw vote share** by roughly 5 to 10 points in several regions (충남 37 to 47, 경남 42 to 51, 강원 39 to 48), because it assumed larger third-party splits than the cleaner two-candidate races delivered. That is why raw-share MAE (6.9pt) overshot the 2.2pt backtest expectation while the two-way MAE (3.6pt), which normalizes out the third-party share, stayed closer to it. 전북 is excluded from the share MAE: 민주 took 51.2%, but the runner-up was an independent (the 국힘 share is off the two-way frame), and the seat was still a correct Democratic hold, per the pre-registered multiparty flag.
 
 ## Methodology deep-dive
 

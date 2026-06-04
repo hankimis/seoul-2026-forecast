@@ -1,82 +1,82 @@
 {
   "_note": "region: { total_man: 총투표(만), D_pct: 민주 득표율%, P_pct: 국힘 득표율% } (raw % of all votes). score.mjs grades vs the forecast (±3% target).",
-  "_source": "FINAL (national count 99.38%, 2026-06-04). Share figures consolidated from most-complete-count news sources; +/-1-2pt source variance, total_man null. 전북 null (민주 share ~52.7% on a 3-way split, 국힘 share unavailable). Seats: 민주 13 / 국힘 3 (대구·경북·경남).",
+  "_source": "CERTIFIED final (2026-06-04, ~99% count). Per-race two-candidate finals (Wikipedia + confirmed news). Seats: 민주 12 / 국힘 4 (국힘 won 서울·대구·경북·경남). 서울 오세훈 역전 당선(48.94 vs 48.34). 전북 excluded from share MAE (민주 51.23, runner-up independent 김관영, 국힘 share n/a; winner 민주 hold). total_man null.",
   "regions": {
     "서울": {
       "total_man": null,
-      "D_pct": 53.5,
-      "P_pct": 42.9
+      "D_pct": 48.34,
+      "P_pct": 48.94
     },
     "부산": {
       "total_man": null,
-      "D_pct": 53.9,
-      "P_pct": 44.4
+      "D_pct": 50.53,
+      "P_pct": 47.91
     },
     "대구": {
       "total_man": null,
-      "D_pct": 46.6,
-      "P_pct": 52.4
+      "D_pct": 45.06,
+      "P_pct": 53.92
     },
     "인천": {
       "total_man": null,
-      "D_pct": 53.7,
-      "P_pct": 45.5
+      "D_pct": 52.84,
+      "P_pct": 46.06
     },
     "대전": {
       "total_man": null,
-      "D_pct": 55.9,
-      "P_pct": 42.9
+      "D_pct": 53.49,
+      "P_pct": 44.16
     },
     "세종": {
       "total_man": null,
-      "D_pct": 64.3,
-      "P_pct": 32.9
+      "D_pct": 61.04,
+      "P_pct": 36.02
     },
     "경기": {
       "total_man": null,
-      "D_pct": 54.8,
-      "P_pct": 39.7
+      "D_pct": 55.04,
+      "P_pct": 39.38
     },
     "강원": {
       "total_man": null,
-      "D_pct": 54.6,
-      "P_pct": 42.0
+      "D_pct": 51.81,
+      "P_pct": 48.19
     },
     "충북": {
       "total_man": null,
-      "D_pct": 56.2,
-      "P_pct": 43.8
+      "D_pct": 54.58,
+      "P_pct": 45.42
     },
     "충남": {
       "total_man": null,
-      "D_pct": 52.1,
-      "P_pct": 47.9
+      "D_pct": 52.53,
+      "P_pct": 47.47
     },
     "전북": null,
     "전남광주": {
       "total_man": null,
-      "D_pct": 81.6,
-      "P_pct": 9.5
+      "D_pct": 79.02,
+      "P_pct": 11.68
     },
     "경북": {
       "total_man": null,
-      "D_pct": 30.0,
-      "P_pct": 64.3
+      "D_pct": 32.76,
+      "P_pct": 67.24
     },
     "경남": {
       "total_man": null,
-      "D_pct": 48.5,
-      "P_pct": 51.5
+      "D_pct": 48.57,
+      "P_pct": 51.42
     },
     "울산": {
       "total_man": null,
-      "D_pct": 52.8,
-      "P_pct": 43.2
+      "D_pct": 48.73,
+      "P_pct": 45.74
     },
     "제주": {
       "total_man": null,
-      "D_pct": 62.2,
-      "P_pct": 34.9
+      "D_pct": 63.11,
+      "P_pct": 33.57
     }
   }
 }
