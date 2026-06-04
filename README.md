@@ -26,6 +26,8 @@ A poll + fundamentals forecast of every metropolitan mayor/governor race in the 
 
 > **Result (2026-06-04, certified final):** winner accuracy **14/16** (misses 서울 and 경남, the two closest races in the country, both narrow 국힘 upsets that also beat the exit polls). Realized seats **민주 12 / 국힘 4**, which is **exactly the forecast's probabilistic median of 12**. **Brier 0.107** (no-skill 0.25), two-way MAE 3.6pt. The seat median was dead-on; the two flagged toss-ups broke against the point call, and raw share ran low on 국힘. See [Realized score](#realized-score-2026-06-04-certified-final).
 
+<p align="center"><img alt="scorecard" src="docs/results/scoreboard.png" width="88%"></p>
+
 - **민주(여당) median 12 / 16 seats** (90% range 8–15); 국힘 holds **대구·경북**. `P(민주 ≥ 12) = 64%`, `P(민주 ≥ 10) = 87%`. 단, 친국힘 −3pt 상관오차면 **11석**까지 하락 (한쪽 통째 오류 리스크).
 - **Tipping point: 울산** (50.4%, 민주 53%). Other tossups lean 민주: 부산·경남·충북·서울.
 - **National two-party vote ≈ 총투표 2,309만(투표율 nowcast 52.3%) → 민주 1,219만 (58.8%) vs 국힘 856만 (41.2%).**
@@ -173,17 +175,77 @@ The election returned **민주 12 / 국힘 4** (국힘 won 서울, 대구, 경�
 
 | metric | result |
 |---|---|
-| **Winner accuracy** | **14 / 16** (misses: 서울, 경남) |
-| **Seat count** | actual 민주 12 = forecast probabilistic median 12 (exact); 90% range 8-15 |
+| **당선 정확도 (Winner accuracy)** | **14 / 16 = 87.5%** (misses: 서울, 경남) |
+| **의석 (Seats)** | 민주 12 = forecast probabilistic median 12 (exact); 90% range 8-15 |
 | **Brier** | **0.107** (no-skill 0.25; 2022 backtest 0.137) |
-| **Two-way MAE** | **3.6pt** |
-| raw-share MAE | 6.9pt (see note below) |
+| **양자 MAE (two-way)** | **3.6pt** (±3pt 적중 7/15) |
+| 원득표율 MAE (raw share) | 6.9pt (국힘 share under-predicted; see note) |
+
+<p align="center"><img alt="tile map predicted vs actual" src="docs/results/tilemap.png" width="100%"></p>
+<p align="center"><sub>Predicted (left) vs actual (right). Blue = 민주, red = 국힘. Only 서울 and 경남 (black border, "역전") flipped.</sub></p>
 
 The standout is the seat count: the model's probabilistic **median of 12 Democratic seats was exactly right**, even though its deterministic point estimate (14) over-counted by two. The reason is calibration. 서울 and 경남 were both flagged as toss-ups (win probabilities 0.73 and 0.65), so the Monte Carlo median already discounted them. The aggregate was well-sized even where the individual point calls erred.
 
 The two misses, 서울 and 경남, were the two closest races in the country and both broke 국힘 against the forecast and the exit polls. 서울 was historic: 오세훈 (국힘) overturned an exit-poll deficit of 5 to 11 points to win a fifth term by **0.6pt (about 30,000 votes)**, the tightest metropolitan-executive race on record, with the lead changing hands four times during the count. 경남 박완수 (국힘) similarly reversed an 8-point exit-poll deficit. The forecast had given the Democrats 73% in 서울 and 65% in 경남; losing two such favorites is within calibration, but it is what the Brier (0.107) and the 14/16 record reflect. The model did correctly hold 대구 for 국힘 (against an exit poll that read it as 경합) and called the tipping-point race, 울산, for the Democrats.
 
 Honest weakness on raw share: the model **under-predicted the 국힘 raw vote share** by roughly 5 to 10 points in several regions (충남 37 to 47, 경남 42 to 51, 강원 39 to 48), because it assumed larger third-party splits than the cleaner two-candidate races delivered. That is why raw-share MAE (6.9pt) overshot the 2.2pt backtest expectation while the two-way MAE (3.6pt), which normalizes out the third-party share, stayed closer to it. 전북 is excluded from the share MAE: 민주 took 51.2%, but the runner-up was an independent (the 국힘 share is off the two-way frame), and the seat was still a correct Democratic hold, per the pre-registered multiparty flag.
+
+#### 정답 -- 확정 개표 결과
+
+| 지역 | 당선자 | 정당 | 민주% | 국힘% |
+|---|---|---|---:|---:|
+| 서울 | 오세훈 | 🔴 국힘 | 48.3 | 48.9 |
+| 부산 | 전재수 | 🔵 민주 | 50.5 | 47.9 |
+| 대구 | 추경호 | 🔴 국힘 | 45.1 | 53.9 |
+| 인천 | 박찬대 | 🔵 민주 | 52.8 | 46.1 |
+| 대전 | 허태정 | 🔵 민주 | 53.5 | 44.2 |
+| 세종 | 조상호 | 🔵 민주 | 61.0 | 36.0 |
+| 경기 | 추미애 | 🔵 민주 | 55.0 | 39.4 |
+| 강원 | 우상호 | 🔵 민주 | 51.8 | 48.2 |
+| 충북 | 신용한 | 🔵 민주 | 54.6 | 45.4 |
+| 충남 | 박수현 | 🔵 민주 | 52.5 | 47.5 |
+| 전북 | 이원택 | 🔵 민주 | 51.2 | n/a *(무소속 2위)* |
+| 전남광주 | 민형배 | 🔵 민주 | 79.0 | 11.7 |
+| 경북 | 이철우 | 🔴 국힘 | 32.8 | 67.2 |
+| 경남 | 박완수 | 🔴 국힘 | 48.6 | 51.4 |
+| 울산 | 김상욱 | 🔵 민주 | 48.7 | 45.7 |
+| 제주 | 위성곤 | 🔵 민주 | 63.1 | 33.6 |
+
+#### 채점 -- 예측 vs 실제 (16곳)
+
+| 지역 | 예측 민주승률 | 예측 당선 | 실제 당선 | 적중 | 양자오차 |
+|---|---:|---|---|:---:|---:|
+| 서울 | 73% | 🔵 민주 | 🔴 국힘 | ❌ | 4.4pt |
+| 부산 | 68% | 🔵 민주 | 🔵 민주 | ✅ | 1.7pt |
+| 대구 | 37% | 🔴 국힘 | 🔴 국힘 | ✅ | 1.9pt |
+| 인천 | 90% | 🔵 민주 | 🔵 민주 | ✅ | 4.0pt |
+| 대전 | 90% | 🔵 민주 | 🔵 민주 | ✅ | 2.8pt |
+| 세종 | 87% | 🔵 민주 | 🔵 민주 | ✅ | 6.2pt |
+| 경기 | 95% | 🔵 민주 | 🔵 민주 | ✅ | 4.4pt |
+| 강원 | 86% | 🔵 민주 | 🔵 민주 | ✅ | 4.5pt |
+| 충북 | 68% | 🔵 민주 | 🔵 민주 | ✅ | 2.0pt |
+| 충남 | 84% | 🔵 민주 | 🔵 민주 | ✅ | 6.2pt |
+| 전북 | 98% | 🔵 민주 | 🔵 민주 | ✅ | n/a |
+| 전남광주 | 98% | 🔵 민주 | 🔵 민주 | ✅ | 2.7pt |
+| 경북 | 2% | 🔴 국힘 | 🔴 국힘 | ✅ | 2.4pt |
+| 경남 | 65% | 🔵 민주 | 🔴 국힘 | ❌ | 4.4pt |
+| 울산 | 53% | 🔵 민주 | 🔵 민주 | ✅ | 1.2pt |
+| 제주 | 98% | 🔵 민주 | 🔵 민주 | ✅ | 5.7pt |
+
+**총 정확도 당선 14/16 (87.5%)  ·  양자 득표율 ±3pt 적중 7/15 (47%)  ·  의석 중앙값 12 = 실제 12 (정확)  ·  Brier 0.107 (무지 0.25).**
+
+#### 결과 그래프
+
+<table>
+<tr>
+<td width="50%"><img alt="blink predicted vs actual" src="docs/results/results_blink.gif"><br><sub><b>예측 ↔ 실제.</b> 서울·경남이 파랑(민주)에서 빨강(국힘)으로 뒤집히는 두 칸.</sub></td>
+<td width="50%"><img alt="win probability vs outcome" src="docs/results/winprob.png"><br><sub><b>예측 승리확률 vs 실제 당선.</b> 미스 2곳은 경합(0.65·0.73)이었고 국힘이 가져감.</sub></td>
+</tr>
+<tr>
+<td width="50%"><img alt="predicted vs actual two-way" src="docs/results/pred_vs_actual.png"><br><sub><b>예측 vs 실제 양자 득표율.</b> 대각선=완벽 예측, 초록=적중, 빨강=미스.</sub></td>
+<td width="50%" valign="center"><sub>The blue cluster sits near the diagonal (well-calibrated direction); the two red points (서울·경남) straddle the 50% line, which is exactly where a 0.6 to 3pt miss flips a winner. The model also ran a touch high on 민주 two-way in several safe regions, the visible vertical offset above the diagonal.</sub></td>
+</tr>
+</table>
 
 ## Methodology deep-dive
 
